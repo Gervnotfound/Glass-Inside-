@@ -9,59 +9,87 @@
             --bg: var(--tg-theme-bg-color, #ffffff);
             --text: var(--tg-theme-text-color, #222222);
             --sec-bg: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            --accent: #800020;
+            --accent: #ffffff;
             --hint: var(--tg-theme-hint-color, #777777);
+            --btn-text: var(--tg-theme-button-text-color, #ffffff);
         }
         
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
-        .screen { display: none; padding: 15px; animation: fadeIn 0.2s ease-in-out; }
+        .screen { display: none; padding: 20px; animation: fadeIn 0.2s ease; }
         .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Поля управления */
-        .sticky-header { position: sticky; top: 0; background: var(--bg); padding: 10px 0; z-index: 10; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        
+        /* Профиль */
+        .profile-card { background: var(--sec-bg); border-radius: 20px; padding: 25px; text-align: center; margin-bottom: 20px; }
+        .avatar { width: 80px; height: 80px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 15px; }
+        .progress-container { background: rgba(0,0,0,0.1); height: 10px; border-radius: 5px; margin: 15px 0 5px; overflow: hidden; }
+        .progress-bar { background: var(--accent); width: 15%; height: 100%; border-radius: 5px; }
+
+        /* Школа */
+        .school-menu { display: flex; flex-direction: column; gap: 12px; }
+        .school-btn { 
+            background: var(--sec-bg); border-radius: 15px; padding: 20px; 
+            border: 1px solid rgba(0,0,0,0.05); text-align: left; cursor: pointer;
+        }
+        .school-btn h3 { margin: 0 0 5px 0; color: var(--accent); }
+        .school-btn p { margin: 0; font-size: 14px; color: var(--hint); }
+
+        /* Каталог */
+        .sticky-header { position: sticky; top: 0; background: var(--bg); padding-bottom: 10px; z-index: 10; }
         select, input { 
             width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 12px; 
             border: 1px solid rgba(0,0,0,0.1); background: var(--sec-bg); color: var(--text); 
-            box-sizing: border-box; font-size: 16px;
-            appearance: none;
-            -webkit-appearance: none; /* Префикс для Safari в Telegram на iOS */
+            box-sizing: border-box; font-size: 16px; appearance: none; -webkit-appearance: none;
         }
-
-        /* Сетка каталога */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: var(--sec-bg); border-radius: 15px; padding: 12px; text-align: center; }
-        .card img { width: 100%; height: 140px; object-fit: contain; background: white; border-radius: 10px; margin-bottom: 8px; }
-        .card h4 { font-size: 13px; margin: 5px 0; height: 32px; overflow: hidden; line-height: 1.2; }
-        
-        /* Нижнее меню */
-        .nav { position: fixed; bottom: 0; width: 100%; background: var(--sec-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid rgba(0,0,0,0.1); }
+        .card img { width: 100%; height: 140px; object-fit: contain; background: white; border-radius: 10px; }
+
+        /* Навигация */
+        .nav { position: fixed; bottom: 0; width: 100%; background: var(--sec-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(0,0,0,0.1); }
         .nav-item { font-size: 11px; opacity: 0.4; cursor: pointer; text-align: center; flex: 1; }
         .nav-item.active { opacity: 1; color: var(--accent); font-weight: bold; }
-        .nav-icon { font-size: 20px; }
 
-        /* Детальное описание */
+        /* Модалка */
         #details { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: none; z-index: 100; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .back-link { color: var(--accent); font-weight: bold; cursor: pointer; display: inline-block; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
     <div id="screen-profile" class="screen">
-        <h2>👤 Профиль</h2>
-        <div id="user-info" style="background: var(--sec-bg); padding: 20px; border-radius: 15px;">
-            Загрузка данных...
+        <div class="profile-card">
+            <div class="avatar" id="user-avatar">?</div>
+            <h2 id="user-full-name" style="margin: 0;">Пользователь</h2>
+            <div id="user-username" style="color: var(--hint); margin-bottom: 15px;">@username</div>
+            
+            <div style="text-align: left; margin-top: 20px;">
+                <span style="font-size: 14px; font-weight: bold;">📊 Прогресс обучения</span>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+                <div style="font-size: 12px; color: var(--hint); display: flex; justify-content: space-between;">
+                    <span>3 из 20 уроков</span>
+                    <span>15%</span>
+                </div>
+            </div>
+        </div>
+        <div style="background: var(--sec-bg); padding: 15px; border-radius: 15px; font-size: 14px;">
+            <b>Ваш статус:</b> Ценитель-новичок 🍷
         </div>
     </div>
 
     <div id="screen-school" class="screen">
-        <h2>🍷 Винная школа</h2>
-        <div class="card" style="text-align: left; margin-bottom: 10px; width: 100%; box-sizing: border-box;">
-            <h3>🎓 Основы дегустации</h3>
-            <p style="color: var(--hint)">Урок 1: Как правильно смотреть на цвет вина.</p>
-            <button style="background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%;">Начать урок</button>
+        <h2 style="margin-top: 0;">🎓 Винная школа</h2>
+        <div class="school-menu">
+            <div class="school-btn" onclick="alertMsg('Базовый курс находится в разработке и скоро будет доступен!')">
+                <h3>🎓 Базовый уровень</h3>
+                <p>История, классификация и правила подачи вина.</p>
+            </div>
+            <div class="school-btn" onclick="alertMsg('Продвинутый курс станет доступен после прохождения базового!')">
+                <h3>🚀 Продвинутый уровень</h3>
+                <p>Слепые дегустации, терруары и коллекционные вина.</p>
+            </div>
         </div>
     </div>
 
@@ -74,21 +102,21 @@
                 <option value="rose">🌸 Розовые вина</option>
                 <option value="dessert">🍯 Десертные вина</option>
             </select>
-            <input type="text" id="search" placeholder="Поиск по названию..." oninput="render()">
+            <input type="text" id="search" placeholder="🔍 Поиск по названию..." oninput="render()">
         </div>
-        <div id="loader" style="text-align: center; display: none; padding: 20px;">Загрузка...</div>
+        <div id="loader" style="text-align: center; display: none; padding: 20px;">Загрузка коллекции...</div>
         <div id="grid" class="grid"></div>
     </div>
 
     <div id="details">
-        <span class="back-link" onclick="document.getElementById('details').style.display='none'">❮ Назад</span>
+        <div onclick="document.getElementById('details').style.display='none'" style="color: var(--accent); font-weight: bold; cursor: pointer; margin-bottom: 20px;">❮ НАЗАД</div>
         <div id="details-body"></div>
     </div>
 
     <div class="nav">
-        <div class="nav-item" id="tab-profile" onclick="switchTab('profile')"><div class="nav-icon">👤</div>Профиль</div>
-        <div class="nav-item" id="tab-school" onclick="switchTab('school')"><div class="nav-icon">🎓</div>Школа</div>
-        <div class="nav-item" id="tab-catalog" onclick="switchTab('catalog')"><div class="nav-icon">🍷</div>Каталог</div>
+        <div class="nav-item" id="tab-profile" onclick="switchTab('profile')">👤<br>Профиль</div>
+        <div class="nav-item" id="tab-school" onclick="switchTab('school')">🎓<br>Школа</div>
+        <div class="nav-item" id="tab-catalog" onclick="switchTab('catalog')">🍷<br>Каталог</div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -97,8 +125,6 @@
         tg.expand();
 
         let wines = [];
-
-        // Получаем текущую страницу из URL (для бота)
         const params = new URLSearchParams(window.location.search);
         const initialTab = params.get('page') || 'profile';
 
@@ -110,6 +136,7 @@
             if(id === 'catalog' && wines.length === 0) loadData();
         }
 
+        // КАТАЛОГ
         async function loadData() {
             const cat = document.getElementById('cat-select').value;
             const loader = document.getElementById('loader');
@@ -118,7 +145,7 @@
                 const res = await fetch(`https://api.sampleapis.com/wines/${cat}`);
                 wines = await res.json();
                 render();
-            } catch(e) { console.error("Ошибка API"); }
+            } catch(e) { console.error(e); }
             loader.style.display = 'none';
         }
 
@@ -137,22 +164,27 @@
         function showPop(id) {
             const w = wines.find(x => x.id === id);
             document.getElementById('details-body').innerHTML = `
-                <div style="text-align:center"><img src="${w.image}" style="max-height:250px; background:white; border-radius:15px; padding:10px;"></div>
+                <div style="text-align:center; background:white; border-radius:15px; padding:10px;">
+                    <img src="${w.image}" style="max-height:250px; object-fit:contain;">
+                </div>
                 <h2>${w.wine}</h2>
                 <p><b>Винодельня:</b> ${w.winery}</p>
                 <p><b>Регион:</b> ${w.location}</p>
                 <p><b>Рейтинг:</b> ⭐ ${w.rating.average} (${w.rating.reviews})</p>
-                <div style="margin-top:20px; padding:15px; background:var(--sec-bg); border-radius:10px;">
-                    Превосходный выбор для знакомства с категорией ${document.getElementById('cat-select').selectedOptions[0].text}.
-                </div>
             `;
             document.getElementById('details').style.display = 'block';
         }
 
-        // Профиль
+        function alertMsg(text) {
+            tg.showPopup({ message: text });
+        }
+
+        // ИНИЦИАЛИЗАЦИЯ ДАННЫХ ПОЛЬЗОВАТЕЛЯ
         const user = tg.initDataUnsafe.user;
         if(user) {
-            document.getElementById('user-info').innerHTML = `<b>${user.first_name}</b><br><span style="color:var(--hint)">@${user.username || 'user'}</span>`;
+            document.getElementById('user-full-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+            document.getElementById('user-username').innerText = user.username ? '@' + user.username : 'ID: ' + user.id;
+            document.getElementById('user-avatar').innerText = user.first_name.charAt(0);
         }
 
         switchTab(initialTab);
