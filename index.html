@@ -1997,302 +1997,333 @@
             }
         }
 
-        // КАТАЛОГ ВИНА - ОСНОВНОЙ ФУНКЦИОНАЛ
-        async function loadWines() {
-            const cat = document.getElementById('cat-sel').value;
-            const container = document.getElementById('grid');
-            const emptyMsg = document.getElementById('empty-catalog');
-            
-            container.innerHTML = '<div style="grid-column: 1/3; text-align: center; padding: 40px; color: var(--hint);">Загрузка вин...</div>';
-            
-            try {
-                const res = await fetch(`https://api.sampleapis.com/wines/${cat}`);
-                allWines = await res.json();
-                renderWines();
-            } catch (error) {
-                console.error('Ошибка загрузки вин:', error);
-                // Используем фиктивные данные в случае ошибки
-                allWines = getMockWines(cat);
-                renderWines();
-            }
-        }
+// ЗАМЕНИТЕ ЭТУ ЧАСТЬ КОДА В СЕКЦИИ <script>
+
+// КАТАЛОГ ВИНА - ОСНОВНОЙ ФУНКЦИОНАЛ
+async function loadWines() {
+    const cat = document.getElementById('cat-sel').value;
+    const container = document.getElementById('grid');
+    const emptyMsg = document.getElementById('empty-catalog');
+    
+    container.innerHTML = '<div style="grid-column: 1/3; text-align: center; padding: 40px; color: var(--hint);">Загрузка вин...</div>';
+    
+    try {
+        // Используем фиктивные данные, так как API может не работать
+        allWines = getMockWines(cat);
         
-        // ФИКТИВНЫЕ ДАННЫЕ ДЛЯ ВИН (на случай если API не работает)
-        function getMockWines(category) {
-            const wines = {
-                reds: [
-                    { id: 1, wine: "Каберне Совиньон 2020", winery: "Château Margaux", location: "Бордо, Франция", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=400&fit=crop&crop=center", rating: { average: 4.7, reviews: 124 } },
-                    { id: 2, wine: "Мерло 2019", winery: "Concha y Toro", location: "Маипо, Чили", image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=400&fit=crop&crop=center", rating: { average: 4.3, reviews: 89 } },
-                    { id: 3, wine: "Пино Нуар 2021", winery: "Domaine de la Romanée", location: "Бургундия, Франция", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=400&fit=crop&crop=center", rating: { average: 4.8, reviews: 156 } },
-                    { id: 4, wine: "Сира 2018", winery: "Penfolds", location: "Барросса, Австралия", image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=400&fit=crop&crop=center", rating: { average: 4.5, reviews: 112 } },
-                    { id: 5, wine: "Темпранильло 2019", winery: "Marqués de Riscal", location: "Риоха, Испания", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=400&fit=crop&crop=center", rating: { average: 4.2, reviews: 78 } },
-                    { id: 6, wine: "Мальбек 2020", winery: "Catena Zapata", location: "Мендоса, Аргентина", image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=400&fit=crop&crop=center", rating: { average: 4.6, reviews: 95 } }
-                ],
-                whites: [
-                    { id: 7, wine: "Шардоне 2021", winery: "Louis Latour", location: "Бургундия, Франция", image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400&h=400&fit=crop&crop=center", rating: { average: 4.4, reviews: 102 } },
-                    { id: 8, wine: "Совиньон Блан 2022", winery: "Cloudy Bay", location: "Мальборо, Новая Зеландия", image: "https://images.unsplash.com/photo-1566633808646-9c5cae8dacee?w=400&h=400&fit=crop&crop=center", rating: { average: 4.7, reviews: 134 } },
-                    { id: 9, wine: "Рислинг 2020", winery: "Dr. Loosen", location: "Мозель, Германия", image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400&h=400&fit=crop&crop=center", rating: { average: 4.5, reviews: 88 } },
-                    { id: 10, wine: "Пино Гриджио 2021", winery: "Santa Margherita", location: "Трентино, Италия", image: "https://images.unsplash.com/photo-1566633808646-9c5cae8dacee?w=400&h=400&fit=crop&crop=center", rating: { average: 4.1, reviews: 76 } }
-                ],
-                sparkling: [
-                    { id: 11, wine: "Шампанское Брют", winery: "Moët & Chandon", location: "Шампань, Франция", image: "https://images.unsplash.com/photo-1513827379601-9dba5099a3f9?w=400&h=400&fit=crop&crop=center", rating: { average: 4.8, reviews: 210 } },
-                    { id: 12, wine: "Просекко DOC", winery: "Mionetto", location: "Венето, Италия", image: "https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&h=400&fit=crop&crop=center", rating: { average: 4.3, reviews: 97 } },
-                    { id: 13, wine: "Кава Брют", winery: "Codorníu", location: "Каталония, Испания", image: "https://images.unsplash.com/photo-1513827379601-9dba5099a3f9?w=400&h=400&fit=crop&crop=center", rating: { average: 4.2, reviews: 85 } }
-                ],
-                rose: [
-                    { id: 14, wine: "Розовое Просекко", winery: "Mionetto", location: "Венето, Италия", image: "https://images.unsplash.com/photo-1598948482976-2-a87457385e4?w=400&h=400&fit=crop&crop=center", rating: { average: 4.4, reviews: 67 } },
-                    { id: 15, wine: "Розе д'Анжу", winery: "Château de Passavent", location: "Долина Луары, Франция", image: "https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&h=400&fit=crop&crop=center", rating: { average: 4.1, reviews: 53 } }
-                ],
-                dessert: [
-                    { id: 16, wine: "Сотерн 2015", winery: "Château d'Yquem", location: "Бордо, Франция", image: "https://images.unsplash.com/photo-1566633808646-9c5cae8dacee?w=400&h=400&fit=crop&crop=center", rating: { average: 4.9, reviews: 189 } },
-                    { id: 17, wine: "Портвейн Руби", winery: "Taylor's", location: "Дору, Португалия", image: "https://images.unsplash.com/photo-1598948482976-2-a87457385e4?w=400&h=400&fit=crop&crop=center", rating: { average: 4.6, reviews: 112 } }
-                ]
-            };
-            
-            return wines[category] || [];
-        }
-        
-        // РЕНДЕР ВИН В КАТАЛОГЕ
-        function renderWines() {
-            const query = document.getElementById('wine-search').value.toLowerCase();
-            const filtered = allWines.filter(w => w.wine.toLowerCase().includes(query));
-            const container = document.getElementById('grid');
-            const emptyMsg = document.getElementById('empty-catalog');
-            
-            if (filtered.length === 0) {
-                container.style.display = 'none';
-                emptyMsg.style.display = 'block';
-                return;
-            }
-            
-            container.style.display = 'grid';
-            emptyMsg.style.display = 'none';
-            
-            container.innerHTML = filtered.map(w => {
-                const isFav = favorites.some(f => f.id === w.id);
-                const imageUrl = w.image || 'https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine';
-                
-                return `
-                    <div class="card">
-                        <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${w.id}, event)">
-                            ❤
-                        </div>
-                        <div class="image-container">
-                            <img src="${imageUrl}" alt="${w.wine}" onclick="showWineDetails(${w.id})" onerror="this.src='https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine'">
-                        </div>
-                        <div onclick="showWineDetails(${w.id})" style="cursor: pointer;">
-                            <h4>${w.wine}</h4>
-                            <div style="color: #fbbf24; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 8px;">
-                                ★ ${w.rating?.average || '4.5'}
-                            </div>
-                            <div style="color: var(--hint); font-size: 13px; margin-top: 5px;">
-                                ${w.winery}
-                            </div>
-                            <div style="color: var(--hint); font-size: 12px;">
-                                ${w.location}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        // ПОКАЗАТЬ ДЕТАЛИ ВИНА
-        function showWineDetails(wineId, fromFavorites = false) {
-            const wine = fromFavorites ? favorites.find(w => w.id === wineId) : allWines.find(w => w.id === wineId);
-            if (!wine) return;
-            
-            // Получаем похожие вина
-            const similarWines = allWines.filter(w => w.id !== wineId).slice(0, 4);
-            
-            // Определяем сочетания с едой
-            const category = document.getElementById('cat-sel').value;
-            let foodPairing = "";
-            
-            switch(category) {
-                case 'reds':
-                    foodPairing = "🍽 Стейки, твердые сыры, дичь, паста с мясным соусом";
-                    break;
-                case 'whites':
-                    foodPairing = "🍽 Морепродукты, рыба, птица, мягкие сыры, салаты";
-                    break;
-                case 'sparkling':
-                    foodPairing = "🍽 Клубника, икра, брускетты, устрицы, легкие десерты";
-                    break;
-                case 'rose':
-                    foodPairing = "🍽 Салаты, лосось, легкие закуски, средиземноморская кухня";
-                    break;
-                case 'dessert':
-                    foodPairing = "🍽 Фрукты, голубой сыр, десерты, орехи, фуа-гра";
-                    break;
-                default:
-                    foodPairing = "🍽 Универсальные закуски";
-            }
-            
-            const imageUrl = wine.image || 'https://via.placeholder.com/300x280/374151/FFFFFF?text=Wine';
-            
-            document.getElementById('det-body').innerHTML = `
-                <div style="margin-bottom: 30px;">
-                    <div class="image-container" style="height: 250px; cursor: pointer;" onclick="zoomImage('${imageUrl}')">
-                        <img src="${imageUrl}" alt="${wine.wine}" style="object-fit: contain;" onerror="this.src='https://via.placeholder.com/300x280/374151/FFFFFF?text=Wine'">
-                    </div>
-                    
-                    <h2 style="margin: 20px 0 10px 0; font-size: 24px; font-weight: 700;">${wine.wine}</h2>
-                    
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                        <div style="color: #fbbf24; font-weight: 700; font-size: 20px;">
-                            ★ ${wine.rating?.average || '4.5'}
-                        </div>
-                        <div style="color: var(--hint); font-size: 14px;">
-                            ${wine.rating?.reviews ? `(${wine.rating.reviews} оценок)` : ''}
-                        </div>
-                    </div>
-                    
-                    <div class="food-badge">${foodPairing}</div>
-                    
-                    <div style="background: var(--card-bg); padding: 20px; border-radius: 16px; margin: 20px 0;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent); font-weight: 600;">
-                            🏰 Винодельня
-                        </div>
-                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">${wine.winery}</div>
-                        <div style="color: var(--hint); font-size: 16px;">${wine.location}</div>
-                    </div>
-                    
-                    <div style="background: var(--card-bg); padding: 20px; border-radius: 16px; margin: 20px 0; border-left: 5px solid var(--accent);">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent); font-weight: 600;">
-                            📝 Описание
-                        </div>
-                        <p style="margin: 0; line-height: 1.6; font-size: 16px;">
-                            ${getWineDescription(wine.wine, category)} 
-                            ${wine.rating?.average >= 4.5 ? 'Это вино получило высокие оценки экспертов и любителей.' : 'Популярный выбор среди ценителей.'}
-                        </p>
-                    </div>
-                    
-                    ${similarWines.length > 0 ? `
-                    <div class="similar-wines">
-                        <h4>
-                            <span style="background: var(--gradient); width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px;">🍷</span>
-                            Похожие вина
-                        </h4>
-                        <div class="similar-scroll">
-                            ${similarWines.map(sw => {
-                                const similarImageUrl = sw.image || 'https://via.placeholder.com/150x120/374151/FFFFFF?text=Wine';
-                                return `
-                                <div class="similar-wine-card" onclick="showWineDetails(${sw.id}); document.getElementById('details').scrollTop = 0;">
-                                    <img src="${similarImageUrl}" alt="${sw.wine}" onerror="this.src='https://via.placeholder.com/150x120/374151/FFFFFF?text=Wine'">
-                                    <h5>${sw.wine}</h5>
-                                    <div style="color: #fbbf24; font-size: 13px; font-weight: 600;">★ ${sw.rating?.average || '4.5'}</div>
-                                </div>
-                            `}).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <div style="display: flex; gap: 12px; margin-top: 30px;">
-                    <button class="btn btn-primary" style="flex: 1;" onclick="toggleFavorite(${wine.id})">
-                        ${favorites.some(f => f.id === wine.id) ? '❤️ В избранном' : '❤️ В избранное'}
-                    </button>
-                    <button class="btn btn-secondary" style="flex: 1;" onclick="closeDetails()">
-                        ← Назад
-                    </button>
-                </div>
-            `;
-            
-            document.getElementById('details').classList.add('active');
-        }
-        
-        // ОПИСАНИЕ ВИНА ПО КАТЕГОРИИ
-        function getWineDescription(wineName, category) {
-            const descriptions = {
-                reds: "Богатое красное вино с выраженным характером. Обладает глубоким цветом, сложным букетом и долгим послевкусием.",
-                whites: "Свежее белое вино с яркой кислотностью и фруктовыми нотами. Идеально для аперитива или к легким блюдам.",
-                sparkling: "Игристое вино с тонкой игрой пузырьков. Освежающее, с приятной кислотностью и элегантным послевкусием.",
-                rose: "Розовое вино с нежным цветом и свежим вкусом. Универсальный выбор для любого случая.",
-                dessert: "Десертное вино с богатым сладким вкусом и сложным ароматом. Идеально к десертам или как дижестив."
-            };
-            
-            return descriptions[category] || "Качественное вино с хорошо сбалансированным вкусом.";
-        }
-        
-        // ПЕРЕКЛЮЧЕНИЕ ИЗБРАННОГО
-        function toggleFavorite(wineId, event) {
-            if (event) event.stopPropagation();
-            
-            const wine = allWines.find(w => w.id === wineId) || favorites.find(w => w.id === wineId);
-            if (!wine) return;
-            
-            const index = favorites.findIndex(f => f.id === wineId);
-            
-            if (index > -1) {
-                favorites.splice(index, 1);
-                showNotification(`Удалено из избранного: ${wine.wine}`, 'info');
-            } else {
-                favorites.push(wine);
-                showNotification(`Добавлено в избранное: ${wine.wine}`, 'success');
-            }
-            
-            saveLocalData();
+        // Имитируем задержку загрузки
+        setTimeout(() => {
             renderWines();
-            renderFavorites();
-        }
+        }, 300);
         
-        // РЕНДЕР ИЗБРАННОГО
-        function renderFavorites() {
-            const container = document.getElementById('fav-grid');
-            const emptyMsg = document.getElementById('empty-favs');
-            
-            if (favorites.length === 0) {
-                container.style.display = 'none';
-                emptyMsg.style.display = 'block';
-                return;
-            }
-            
-            container.style.display = 'grid';
-            emptyMsg.style.display = 'none';
-            
-            container.innerHTML = favorites.map(w => {
-                const imageUrl = w.image || 'https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine';
-                return `
-                    <div class="card">
-                        <div class="fav-btn active" onclick="toggleFavorite(${w.id}, event)">
-                            ❤
-                        </div>
-                        <div class="image-container">
-                            <img src="${imageUrl}" alt="${w.wine}" onclick="showWineDetails(${w.id}, true)" onerror="this.src='https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine'">
-                        </div>
-                        <div onclick="showWineDetails(${w.id}, true)" style="cursor: pointer;">
-                            <h4>${w.wine}</h4>
-                            <div style="color: #fbbf24; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 8px;">
-                                ★ ${w.rating?.average || '4.5'}
-                            </div>
-                            <div style="color: var(--hint); font-size: 13px;">
-                                ${w.winery}
-                            </div>
-                        </div>
+    } catch (error) {
+        console.error('Ошибка загрузки вин:', error);
+        container.innerHTML = '<div style="grid-column: 1/3; text-align: center; padding: 40px; color: var(--hint);">Ошибка загрузки данных</div>';
+    }
+}
+
+// РЕНДЕР ВИН В КАТАЛОГЕ
+function renderWines() {
+    const query = document.getElementById('wine-search').value.toLowerCase();
+    const filtered = allWines.filter(w => w.wine.toLowerCase().includes(query));
+    const container = document.getElementById('grid');
+    const emptyMsg = document.getElementById('empty-catalog');
+    
+    if (filtered.length === 0) {
+        container.style.display = 'none';
+        emptyMsg.style.display = 'block';
+        return;
+    }
+    
+    container.style.display = 'grid';
+    emptyMsg.style.display = 'none';
+    
+    container.innerHTML = filtered.map(w => {
+        const isFav = favorites.some(f => f.id === w.id);
+        const imageUrl = w.image || 'https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine';
+        
+        return `
+            <div class="card" onclick="openWineDetails(${w.id})">
+                <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${w.id}, event)">
+                    ❤
+                </div>
+                <div class="image-container">
+                    <img src="${imageUrl}" alt="${w.wine}" onerror="this.src='https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine'">
+                </div>
+                <div>
+                    <h4>${w.wine}</h4>
+                    <div style="color: #fbbf24; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 8px;">
+                        ★ ${w.rating?.average || '4.5'}
                     </div>
-                `;
-            }).join('');
-        }
-        
-        // ЗАКРЫТИЕ ДЕТАЛЕЙ ВИНА
-        function closeDetails() {
-            document.getElementById('details').classList.remove('active');
-            setTab('catalog');
-        }
-        
-        // ЗУМ ИЗОБРАЖЕНИЯ
-        function zoomImage(src) {
-            document.getElementById('zoom-img').src = src;
-            document.getElementById('zoom-modal').style.display = 'flex';
+                    <div style="color: var(--hint); font-size: 13px; margin-top: 5px;">
+                        ${w.winery}
+                    </div>
+                    <div style="color: var(--hint); font-size: 12px;">
+                        ${w.location}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ОТКРЫТИЕ ДЕТАЛЕЙ ВИНА
+function openWineDetails(wineId) {
+    const wine = allWines.find(w => w.id === wineId);
+    if (!wine) return;
+    
+    // Получаем похожие вина
+    const similarWines = allWines.filter(w => w.id !== wineId).slice(0, 4);
+    
+    // Определяем сочетания с едой
+    const category = document.getElementById('cat-sel').value;
+    let foodPairing = "";
+    
+    switch(category) {
+        case 'reds':
+            foodPairing = "🍽 Стейки, твердые сыры, дичь, паста с мясным соусом";
+            break;
+        case 'whites':
+            foodPairing = "🍽 Морепродукты, рыба, птица, мягкие сыры, салаты";
+            break;
+        case 'sparkling':
+            foodPairing = "🍽 Клубника, икра, брускетты, устрицы, легкие десерты";
+            break;
+        case 'rose':
+            foodPairing = "🍽 Салаты, лосось, легкие закуски, средиземноморская кухня";
+            break;
+        case 'dessert':
+            foodPairing = "🍽 Фрукты, голубой сыр, десерты, орехи, фуа-гра";
+            break;
+        default:
+            foodPairing = "🍽 Универсальные закуски";
+    }
+    
+    const imageUrl = wine.image || 'https://via.placeholder.com/300x280/374151/FFFFFF?text=Wine';
+    const rating = wine.rating?.average || 4.5;
+    const reviews = wine.rating?.reviews || '';
+    
+    document.getElementById('det-body').innerHTML = `
+        <div style="margin-bottom: 30px;">
+            <div class="image-container" style="height: 250px; cursor: pointer;" onclick="zoomImage('${imageUrl}')">
+                <img src="${imageUrl}" alt="${wine.wine}" style="object-fit: contain;" onerror="this.src='https://via.placeholder.com/300x280/374151/FFFFFF?text=Wine'">
+            </div>
             
-            // Закрытие по клику на фон
-            document.getElementById('zoom-modal').onclick = function(e) {
-                if (e.target === this) {
-                    this.style.display = 'none';
-                }
-            };
+            <h2 style="margin: 20px 0 10px 0; font-size: 24px; font-weight: 700;">${wine.wine}</h2>
+            
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <div style="color: #fbbf24; font-weight: 700; font-size: 20px;">
+                    ★ ${rating}
+                </div>
+                ${reviews ? `<div style="color: var(--hint); font-size: 14px;">(${reviews} оценок)</div>` : ''}
+            </div>
+            
+            <div class="food-badge">${foodPairing}</div>
+            
+            <div style="background: var(--card-bg); padding: 20px; border-radius: 16px; margin: 20px 0;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent); font-weight: 600;">
+                    🏰 Винодельня
+                </div>
+                <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">${wine.winery}</div>
+                <div style="color: var(--hint); font-size: 16px;">${wine.location}</div>
+            </div>
+            
+            <div style="background: var(--card-bg); padding: 20px; border-radius: 16px; margin: 20px 0; border-left: 5px solid var(--accent);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent); font-weight: 600;">
+                    📝 Описание
+                </div>
+                <p style="margin: 0; line-height: 1.6; font-size: 16px;">
+                    ${getWineDescription(wine.wine, category)} 
+                    ${rating >= 4.5 ? 'Это вино получило высокие оценки экспертов и любителей.' : 'Популярный выбор среди ценителей.'}
+                </p>
+            </div>
+            
+            ${similarWines.length > 0 ? `
+            <div class="similar-wines">
+                <h4>
+                    <span style="background: var(--gradient); width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px;">🍷</span>
+                    Похожие вина
+                </h4>
+                <div class="similar-scroll">
+                    ${similarWines.map(sw => {
+                        const similarImageUrl = sw.image || 'https://via.placeholder.com/150x120/374151/FFFFFF?text=Wine';
+                        const similarRating = sw.rating?.average || 4.5;
+                        return `
+                        <div class="similar-wine-card" onclick="openWineDetails(${sw.id})">
+                            <img src="${similarImageUrl}" alt="${sw.wine}" onerror="this.src='https://via.placeholder.com/150x120/374151/FFFFFF?text=Wine'">
+                            <h5>${sw.wine}</h5>
+                            <div style="color: #fbbf24; font-size: 13px; font-weight: 600;">★ ${similarRating}</div>
+                        </div>
+                    `}).join('')}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+        
+        <div style="display: flex; gap: 12px; margin-top: 30px;">
+            <button class="btn btn-primary" style="flex: 1;" onclick="toggleFavorite(${wine.id}); renderWines();">
+                ${favorites.some(f => f.id === wine.id) ? '❤️ В избранном' : '❤️ В избранное'}
+            </button>
+            <button class="btn btn-secondary" style="flex: 1;" onclick="closeDetails()">
+                ← Назад
+            </button>
+        </div>
+    `;
+    
+    // Показываем модальное окно
+    document.getElementById('details').style.display = 'block';
+    document.getElementById('details').classList.add('active');
+}
+
+// ОПИСАНИЕ ВИНА ПО КАТЕГОРИИ
+function getWineDescription(wineName, category) {
+    const descriptions = {
+        reds: "Богатое красное вино с выраженным характером. Обладает глубоким цветом, сложным букетом и долгим послевкусием.",
+        whites: "Свежее белое вино с яркой кислотностью и фруктовыми нотами. Идеально для аперитива или к легким блюдам.",
+        sparkling: "Игристое вино с тонкой игрой пузырьков. Освежающее, с приятной кислотностью и элегантным послевкусием.",
+        rose: "Розовое вино с нежным цветом и свежим вкусом. Универсальный выбор для любого случая.",
+        dessert: "Десертное вино с богатым сладким вкусом и сложным ароматом. Идеально к десертам или как дижестив."
+    };
+    
+    return descriptions[category] || "Качественное вино с хорошо сбалансированным вкусом.";
+}
+
+// ПЕРЕКЛЮЧЕНИЕ ИЗБРАННОГО
+function toggleFavorite(wineId, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    
+    const wine = allWines.find(w => w.id === wineId) || favorites.find(w => w.id === wineId);
+    if (!wine) return;
+    
+    const index = favorites.findIndex(f => f.id === wineId);
+    
+    if (index > -1) {
+        favorites.splice(index, 1);
+        showNotification(`Удалено из избранного: ${wine.wine}`, 'info');
+    } else {
+        favorites.push(wine);
+        showNotification(`Добавлено в избранное: ${wine.wine}`, 'success');
+    }
+    
+    saveLocalData();
+    renderWines();
+    renderFavorites();
+}
+
+// РЕНДЕР ИЗБРАННОГО
+function renderFavorites() {
+    const container = document.getElementById('fav-grid');
+    const emptyMsg = document.getElementById('empty-favs');
+    
+    if (favorites.length === 0) {
+        container.style.display = 'none';
+        emptyMsg.style.display = 'block';
+        return;
+    }
+    
+    container.style.display = 'grid';
+    emptyMsg.style.display = 'none';
+    
+    container.innerHTML = favorites.map(w => {
+        const imageUrl = w.image || 'https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine';
+        const rating = w.rating?.average || 4.5;
+        
+        return `
+            <div class="card" onclick="openWineDetails(${w.id})">
+                <div class="fav-btn active" onclick="toggleFavorite(${w.id}, event)">
+                    ❤
+                </div>
+                <div class="image-container">
+                    <img src="${imageUrl}" alt="${w.wine}" onerror="this.src='https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine'">
+                </div>
+                <div>
+                    <h4>${w.wine}</h4>
+                    <div style="color: #fbbf24; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 8px;">
+                        ★ ${rating}
+                    </div>
+                    <div style="color: var(--hint); font-size: 13px;">
+                        ${w.winery}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ЗАКРЫТИЕ ДЕТАЛЕЙ ВИНА
+function closeDetails() {
+    document.getElementById('details').style.display = 'none';
+    document.getElementById('details').classList.remove('active');
+}
+
+// ЗУМ ИЗОБРАЖЕНИЯ
+function zoomImage(src) {
+    document.getElementById('zoom-img').src = src;
+    document.getElementById('zoom-modal').style.display = 'flex';
+    
+    // Закрытие по клику на фон
+    document.getElementById('zoom-modal').onclick = function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
         }
+    };
+}
+
+// В НАСТРОЙКЕ ОБРАБОТЧИКОВ СОБЫТИЙ ДОБАВЬТЕ ЭТУ СТРОЧКУ:
+function setupEventListeners() {
+    // ... существующий код ...
+    
+    // Поиск в каталоге
+    document.getElementById('wine-search').addEventListener('input', renderWines);
+    document.getElementById('cat-sel').addEventListener('change', loadWines);
+    
+    // ... остальной код ...
+}
+
+// В ФУНКЦИИ setTab ОБНОВИТЕ КОД:
+function setTab(tabId) {
+    // Скрываем все экраны
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+    
+    // Скрываем все модальные окна
+    document.getElementById('lesson-modal').style.display = 'none';
+    document.getElementById('quiz-modal').style.display = 'none';
+    document.getElementById('details').style.display = 'none';
+    document.getElementById('wiki-popup').style.display = 'none';
+    document.getElementById('zoom-modal').style.display = 'none';
+    
+    // Показываем нужный экран
+    const screenId = tabId.startsWith('screen-') ? tabId : `screen-${tabId}`;
+    document.getElementById(screenId).classList.add('active');
+    
+    // Обновляем навигацию
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.getElementById(`t-${tabId}`).classList.add('active');
+    
+    // Загружаем данные для экрана
+    switch(tabId) {
+        case 'profile':
+            renderFavorites();
+            updateUserProgress();
+            break;
+        case 'catalog':
+            if (allWines.length === 0) loadWines();
+            break;
+        case 'school':
+            updateCourseProgress();
+            break;
+        case 'wiki':
+            toggleWiki('terms');
+            break;
+    }
+}
         
         // ВИКИВИНО
         function toggleWiki(type) {
