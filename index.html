@@ -34,6 +34,7 @@
         .controls { position: sticky; top: 0; background: var(--bg); z-index: 10; padding-bottom: 15px; }
         select, input { width: 100%; padding: 12px; border-radius: 12px; background: var(--sec-bg); color: #fff; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; box-sizing: border-box; font-size: 16px; outline: none; }
 
+        /* FOOD BADGE */
         .food-badge { display: inline-block; background: var(--food-bg); color: var(--accent); padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; margin: 10px 0; border: 1px solid var(--accent); }
 
         /* ВИКИВИНО */
@@ -44,7 +45,7 @@
 
         /* НАВИГАЦИЯ */
         .nav { position: fixed; bottom: 0; width: 100%; background: var(--sec-bg); display: flex; height: 85px; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { flex: 1; text-align: center; opacity: 0.5; font-size: 11px; color: var(--text); text-decoration: none; cursor: pointer; }
+        .nav-item { flex: 1; text-align: center; opacity: 0.5; font-size: 11px; color: var(--text); text-decoration: none; }
         .nav-item.active { opacity: 1; color: var(--accent); }
         .nav-icon { font-size: 22px; margin-bottom: 4px; }
 
@@ -52,8 +53,6 @@
         #details, #wiki-popup, #zoom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: none; z-index: 2000; padding: 25px; overflow-y: auto; box-sizing: border-box; }
         #zoom-modal { background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; }
         .back-link { color: var(--accent); font-weight: bold; margin-bottom: 20px; display: inline-block; cursor: pointer; }
-        
-        #loader { text-align: center; padding: 20px; color: var(--accent); display: none; }
     </style>
 </head>
 <body>
@@ -73,6 +72,10 @@
         <div onclick="tg.showPopup({message:'Курс в разработке'})" style="background: var(--sec-bg); padding: 20px; border-radius: 20px; margin-bottom: 12px;">
             <h3 style="margin:0">🌱 Базовый курс</h3>
             <p style="font-size: 13px; color: var(--hint); margin: 5px 0 0;">Основы дегустации и классификация.</p>
+        </div>
+        <div onclick="tg.showPopup({message:'Курс в разработке'})" style="background: var(--sec-bg); padding: 20px; border-radius: 20px;">
+            <h3 style="margin:0">🚀 Продвинутый уровень</h3>
+            <p style="font-size: 13px; color: var(--hint); margin: 5px 0 0;">Сложные ассамбляжи и терруары.</p>
         </div>
     </div>
 
@@ -94,9 +97,8 @@
                 <option value="rose">🌸 Розовые</option>
                 <option value="dessert">🍯 Десертные</option>
             </select>
-            <input type="text" id="wine-search" placeholder="🔍 Поиск..." oninput="render()">
+            <input type="text" id="wine-search" placeholder="🔍 Поиск по названию..." oninput="render()">
         </div>
-        <div id="loader">Загрузка данных...</div>
         <div id="grid" class="grid"></div>
     </div>
 
@@ -130,16 +132,33 @@
         let allWines = [];
         let favorites = JSON.parse(localStorage.getItem('fav_wines') || '[]');
 
-        // ССЫЛКА НА ВАШ ФАЙЛ В РЕПОЗИТОРИИ
-        const DATA_URL = 'https://gervnotfound.github.io/Glass-Inside-/data.json';
-
         const wikiData = {
             terms: [
-                { t: "Аэрация", d: "Процесс насыщения вина кислородом." },
-                { t: "Терруар", d: "Влияние почвы и климата на вкус." }
+                { t: "Аэрация", d: "Процесс насыщения вина кислородом. Молодым красным винам это помогает 'раскрыться', смягчая танины." },
+                { t: "Ассамбляж", d: "Смешивание разных сортов винограда или вин из разных бочек для создания гармоничного конечного продукта." },
+                { t: "Апелласьон", d: "Защищенная географическая зона производства вина с четко прописанными правилами." },
+                { t: "Брют", d: "Категория игристого вина с очень низким содержанием сахара (менее 12 г/л)." },
+                { t: "Дегоржаж", d: "Этап производства игристого по классике: удаление осадка из горлышка бутылки." },
+                { t: "Декантация", d: "Переливание вина в декантер для отделения осадка или аэрации." },
+                { t: "Кюве", d: "Вино самого высокого качества, часто из сока первого отжима." },
+                { t: "Миллезим", d: "Год сбора урожая винограда." },
+                { t: "Нос", d: "Профессиональный термин для обозначения совокупности ароматов вина." },
+                { t: "Перляж", d: "Игра пузырьков в бокале игристого вина." },
+                { t: "Танины", d: "Вещества в кожице винограда, создающие вяжущий вкус." },
+                { t: "Терруар", d: "Влияние почвы, климата и рельефа на вкус вина." },
+                { t: "Филлоксера", d: "Тля, уничтожившая почти все виноградники Европы в XIX веке." },
+                { t: "Шаптализация", d: "Добавление сахара в сусло для повышения крепости." },
+                { t: "Экстрактивность", d: "Концентрация вкусовых и ароматических веществ в вине." },
+                { t: "Энолог", d: "Специалист по техническим аспектам виноделия." },
+                { t: "Боди (Тело)", d: "Вес и плотность вина на языке." },
+                { t: "Вертикальная дегустация", d: "Проба одного вина разных годов урожая." }
             ],
             myths: [
-                { t: "Ложка в бутылке", d: "Миф! Не спасает пузырьки." }
+                { t: "Ложка в бутылке спасает пузырьки?", d: "<b>Миф!</b> Физика этого не подтверждает. Спасает только герметичный стоппер." },
+                { t: "У вина должно быть вогнутое дно?", d: "<b>Миф!</b> Это традиция стеклодувов, а не показатель качества сока." },
+                { t: "Белое только к рыбе, красное к мясу?", d: "<b>Миф!</b> Плотное белое идет к птице, а легкое красное к жирной рыбе." },
+                { t: "Вино с возрастом всегда лучше?", d: "<b>Миф!</b> Большинство вин умирают через 5 лет после выпуска." },
+                { t: "Порошковое вино существует?", d: "<b>Миф!</b> Делать вино из порошка экономически невыгодно." }
             ]
         };
 
@@ -149,28 +168,15 @@
             document.getElementById(`screen-${id}`).classList.add('active');
             document.getElementById(`t-${id}`).classList.add('active');
             if(id === 'catalog' && allWines.length === 0) load();
+            if(id === 'wiki') toggleWiki('terms');
             if(id === 'profile') renderFavs();
         }
 
         async function load() {
             const cat = document.getElementById('cat-sel').value;
-            const loader = document.getElementById('loader');
-            const grid = document.getElementById('grid');
-            
-            loader.style.display = 'block';
-            grid.innerHTML = '';
-
-            try {
-                // Добавляем случайный параметр, чтобы избежать старого кэша
-                const res = await fetch(`${DATA_URL}?v=${new Date().getTime()}`);
-                const db = await res.json();
-                allWines = db[cat] || [];
-                render();
-            } catch (e) {
-                grid.innerHTML = '<p style="text-align:center; width:100%;">Ошибка загрузки data.json</p>';
-            } finally {
-                loader.style.display = 'none';
-            }
+            const res = await fetch(`https://api.sampleapis.com/wines/${cat}`);
+            allWines = await res.json();
+            render();
         }
 
         function render() {
@@ -184,22 +190,38 @@
                     <img src="${w.image}" onclick="zoomImg('${w.image}')" onerror="this.src='https://via.placeholder.com/100?text=Wine'">
                     <div onclick="showFull(${w.id})">
                         <h4>${w.wine}</h4>
-                        <div style="color:#facc15">★ ${w.rating || '4.8'}</div>
+                        <div style="color:#facc15">★ ${w.rating.average}</div>
                     </div>
                 </div>`;
             }).join('');
         }
 
+        function zoomImg(src) {
+            document.getElementById('zoom-img').src = src;
+            document.getElementById('zoom-modal').style.display = 'flex';
+        }
+
+        function getFoodPairing(wineName) {
+            const cat = document.getElementById('cat-sel').value;
+            if (cat === 'reds') return "🍽 Стейки, твердые сыры, дичь";
+            if (cat === 'whites') return "🍽 Морепродукты, птица, мягкие сыры";
+            if (cat === 'rose') return "🍽 Салаты, лосось, легкие закуски";
+            if (cat === 'sparkling') return "🍽 Клубника, икра, брускетты";
+            if (cat === 'dessert') return "🍽 Фрукты, голубой сыр, десерты";
+            return "🍽 Универсальные закуски";
+        }
+
         function showFull(id, fromFav = false) {
             const w = fromFav ? favorites.find(x => x.id === id) : allWines.find(x => x.id === id);
-            if(!w) return;
+            const pairing = getFoodPairing(w.wine);
             document.getElementById('det-body').innerHTML = `
                 <img src="${w.image}" style="width:100%; height:250px; object-fit:contain; background:#fff; border-radius:20px; padding:10px;">
                 <h2>${w.wine}</h2>
-                <div class="food-badge">🍽 ${w.food || 'Универсальная закуска'}</div>
+                <div class="food-badge">${pairing}</div>
                 <p style="color:var(--hint)">${w.winery} • ${w.location}</p>
                 <div style="background:var(--sec-bg); padding:20px; border-radius:15px; margin:15px 0;">
-                    <b>Описание:</b><br><br>${w.info}
+                    <b>Характеристики:</b><br><br>
+                    Это вино обладает выраженным характером. Рейтинг: ${w.rating.average} звезды.
                 </div>
             `;
             document.getElementById('details').style.display = 'block';
@@ -219,7 +241,7 @@
         function renderFavs() {
             const container = document.getElementById('fav-grid');
             if(favorites.length === 0) {
-                container.innerHTML = '<p style="grid-column:1/3; text-align:center; padding:20px;">Пусто</p>';
+                container.innerHTML = '<p style="color:var(--hint); grid-column:1/3; text-align:center; padding:20px;">Здесь пока пусто.</p>';
                 return;
             }
             container.innerHTML = favorites.map(w => `
@@ -247,14 +269,8 @@
             document.getElementById('wiki-popup').style.display = 'block';
         }
 
-        function zoomImg(src) {
-            document.getElementById('zoom-img').src = src;
-            document.getElementById('zoom-modal').style.display = 'flex';
-        }
-
         function closeDetails() { document.getElementById('details').style.display = 'none'; }
 
-        // Инициализация профиля
         const user = tg.initDataUnsafe.user;
         if(user) {
             document.getElementById('user-name').innerText = user.first_name;
