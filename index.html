@@ -6,154 +6,539 @@
     <title>Glass Inside - Expert Edition</title>
     <style>
         :root {
-            --bg: #1a1a24;
-            --text: #ffffff;
-            --sec-bg: #2b2b36;
-            --accent: #c084fc;
-            --hint: #a1a1aa;
-            --heart: #ff4b5c;
-            --food-bg: rgba(192, 132, 252, 0.15);
+            --bg: #0f172a;
+            --text: #f8fafc;
+            --sec-bg: #1e293b;
+            --accent: #7c3aed;
+            --accent-light: #8b5cf6;
+            --hint: #94a3b8;
+            --heart: #fb7185;
             --success: #10b981;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --food-bg: rgba(124, 58, 237, 0.15);
+            --gradient: linear-gradient(135deg, #7c3aed, #3b82f6);
         }
 
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; overflow-x: hidden; }
-        .screen { display: none; padding: 20px; animation: fadeIn 0.2s ease; }
+        * { -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding-bottom: 90px; 
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
+        }
+        .screen { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
         .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        /* КАРТОЧКИ КАТАЛОГА */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 24px; 
+            padding: 20px; 
+            position: relative; 
+            min-height: 280px; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            border: 1px solid rgba(255,255,255,0.08); 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            backdrop-filter: blur(10px);
+        }
+        .card:hover { transform: translateY(-4px); border-color: var(--accent-light); box-shadow: 0 12px 40px rgba(124, 58, 237, 0.2); }
+        .card img { width: 100%; height: 150px; object-fit: contain; background: linear-gradient(135deg, #f1f5f9, #e2e8f0); border-radius: 16px; cursor: pointer; transition: transform 0.3s; }
+        .card h4 { margin: 15px 0 8px; font-size: 15px; line-height: 1.3; height: 38px; overflow: hidden; font-weight: 600; }
 
         /* ИЗБРАННОЕ */
-        .fav-btn { position: absolute; top: 10px; right: 10px; font-size: 20px; z-index: 5; background: rgba(0,0,0,0.3); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .fav-btn.active { color: var(--heart); }
-
-        /* КАРТОЧКИ */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .card { background: var(--sec-bg); border-radius: 20px; padding: 15px; position: relative; min-height: 280px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05); }
-        .card img { width: 100%; height: 140px; object-fit: contain; background: white; border-radius: 15px; cursor: pointer; }
-        .card h4 { margin: 10px 0 5px; font-size: 14px; line-height: 1.2; height: 34px; overflow: hidden; }
+        .fav-btn { 
+            position: absolute; top: 12px; right: 12px; 
+            font-size: 22px; z-index: 5; 
+            background: rgba(15, 23, 42, 0.9); 
+            border-radius: 50%; width: 42px; height: 42px; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: all 0.3s; border: 2px solid rgba(255,255,255,0.1); 
+            backdrop-filter: blur(10px);
+        }
+        .fav-btn:hover { border-color: var(--heart); transform: scale(1.1); }
+        .fav-btn.active { color: var(--heart); border-color: var(--heart); background: rgba(251, 113, 133, 0.1); }
 
         /* ПОИСК И СЕЛЕКТ */
-        .controls { position: sticky; top: 0; background: var(--bg); z-index: 10; padding-bottom: 15px; }
-        select, input { width: 100%; padding: 12px; border-radius: 12px; background: var(--sec-bg); color: #fff; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; box-sizing: border-box; font-size: 16px; outline: none; }
+        .controls { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 15px 0; backdrop-filter: blur(20px); }
+        select, input { 
+            width: 100%; padding: 16px; border-radius: 16px; 
+            background: var(--sec-bg); color: var(--text); 
+            border: 2px solid rgba(255,255,255,0.1); 
+            margin-bottom: 12px; box-sizing: border-box; 
+            font-size: 16px; outline: none; transition: border 0.3s;
+            font-weight: 500;
+        }
+        select:focus, input:focus { border-color: var(--accent); }
+        input::placeholder { color: var(--hint); }
 
         /* FOOD BADGE */
-        .food-badge { display: inline-block; background: var(--food-bg); color: var(--accent); padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; margin: 10px 0; border: 1px solid var(--accent); }
+        .food-badge { 
+            display: inline-block; 
+            background: var(--food-bg); 
+            color: var(--accent-light); 
+            padding: 8px 16px; 
+            border-radius: 12px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            margin: 12px 0; 
+            border: 1px solid var(--accent-light);
+            animation: float 3s ease-in-out infinite;
+        }
 
         /* ВИКИВИНО */
-        .wiki-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .wiki-tab { flex: 1; padding: 12px; background: var(--sec-bg); border-radius: 12px; text-align: center; font-size: 14px; opacity: 0.6; cursor: pointer; }
-        .wiki-tab.active { opacity: 1; background: var(--accent); color: #000; font-weight: bold; }
-        .wiki-item { background: var(--sec-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 4px solid var(--accent); cursor: pointer; }
+        .wiki-tabs { display: flex; gap: 12px; margin-bottom: 24px; }
+        .wiki-tab { 
+            flex: 1; padding: 16px; 
+            background: var(--sec-bg); 
+            border-radius: 16px; 
+            text-align: center; 
+            font-size: 15px; 
+            opacity: 0.6; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .wiki-tab.active { opacity: 1; background: var(--gradient); color: white; font-weight: 600; box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3); }
+        .wiki-item { 
+            background: var(--card-bg); 
+            padding: 20px; 
+            border-radius: 18px; 
+            margin-bottom: 12px; 
+            border-left: 5px solid var(--accent); 
+            cursor: pointer; 
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .wiki-item:hover { transform: translateX(5px); border-left-color: var(--accent-light); }
 
         /* НАВИГАЦИЯ */
-        .nav { position: fixed; bottom: 0; width: 100%; background: var(--sec-bg); display: flex; height: 85px; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { flex: 1; text-align: center; opacity: 0.5; font-size: 11px; color: var(--text); text-decoration: none; }
-        .nav-item.active { opacity: 1; color: var(--accent); }
-        .nav-icon { font-size: 22px; margin-bottom: 4px; }
+        .nav { 
+            position: fixed; bottom: 0; width: 100%; 
+            background: rgba(15, 23, 42, 0.95); 
+            display: flex; height: 80px; 
+            align-items: center; 
+            border-top: 1px solid rgba(255,255,255,0.08); 
+            z-index: 1000; 
+            padding-bottom: env(safe-area-inset-bottom);
+            backdrop-filter: blur(20px);
+        }
+        .nav-item { 
+            flex: 1; text-align: center; 
+            opacity: 0.6; font-size: 12px; 
+            color: var(--text); text-decoration: none; 
+            transition: all 0.3s; padding: 10px 0;
+        }
+        .nav-item.active { opacity: 1; color: var(--accent-light); }
+        .nav-icon { 
+            font-size: 24px; margin-bottom: 6px; 
+            display: block; transition: transform 0.3s;
+        }
+        .nav-item.active .nav-icon { transform: translateY(-3px); color: var(--accent-light); }
+
+        /* КАРТОЧКА КУРСА */
+        .course-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.1), transparent);
+            transition: left 0.6s;
+        }
+        .course-card:hover::before {
+            left: 100%;
+        }
+        .course-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.2);
+        }
+        .course-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .course-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+        .course-info h3 {
+            margin: 0 0 8px 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .course-info p {
+            margin: 0;
+            color: var(--hint);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .course-progress {
+            background: rgba(255,255,255,0.05);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .course-progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* ЭКРАН УРОКОВ КУРСА */
+        .lesson-item {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid rgba(255,255,255,0.05);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        .lesson-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.15);
+        }
+        .lesson-item.completed {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        .lesson-number {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--gradient);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        .lesson-status {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            color: var(--success);
+            font-size: 24px;
+        }
+        .lesson-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15px 0 10px;
+            line-height: 1.4;
+        }
+        .lesson-preview {
+            font-size: 14px;
+            color: var(--hint);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
 
         /* МОДАЛКИ */
-        #details, #wiki-popup, #zoom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: none; z-index: 2000; padding: 25px; overflow-y: auto; box-sizing: border-box; }
-        #zoom-modal { background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 3000; }
-        .back-link { color: var(--accent); font-weight: bold; margin-bottom: 20px; display: inline-block; cursor: pointer; }
+        #details, #wiki-popup, #zoom-modal, #lesson-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            display: none;
+            z-index: 2000;
+            padding: 25px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            animation: fadeIn 0.3s ease;
+        }
+        #zoom-modal {
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(20px);
+        }
+        .back-link {
+            color: var(--accent-light);
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px 0;
+            font-size: 16px;
+        }
 
-        /* ПРОГРЕСС КУРСА (НОВОЕ) */
-        .progress-section { margin-top: 25px; }
-        .progress-card { background: linear-gradient(135deg, var(--sec-bg), #333344); border-radius: 20px; padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--accent); }
-        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .progress-bar { height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; margin-bottom: 10px; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #d8b4fe); border-radius: 6px; transition: width 0.5s ease; }
-        .progress-text { display: flex; justify-content: space-between; font-size: 14px; color: var(--hint); }
-        .lesson-card { background: var(--sec-bg); border-radius: 15px; padding: 20px; margin-bottom: 15px; position: relative; cursor: pointer; transition: transform 0.2s; }
-        .lesson-card:hover { transform: translateY(-2px); }
-        .lesson-number { position: absolute; top: -10px; left: 15px; background: var(--accent); color: #000; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
-        .lesson-completed { border-color: var(--success); }
-        .lesson-completed .lesson-number { background: var(--success); }
-        .checkmark { position: absolute; top: 15px; right: 15px; color: var(--success); font-size: 20px; }
-        .lesson-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-        .lesson-preview { font-size: 14px; color: var(--hint); margin-bottom: 10px; line-height: 1.4; max-height: 40px; overflow: hidden; }
-        .lesson-meta { display: flex; gap: 15px; font-size: 12px; color: var(--hint); }
-        .lesson-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; padding: 20px; overflow-y: auto; display: none; }
-        .lesson-content { line-height: 1.6; }
-        .lesson-tip { background: rgba(192, 132, 252, 0.1); border-left: 3px solid var(--accent); padding: 15px; border-radius: 0 10px 10px 0; margin: 20px 0; }
-        .lesson-actions { display: flex; gap: 10px; margin-top: 25px; }
-        .btn { flex: 1; padding: 15px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer; }
-        .btn-primary { background: var(--accent); color: #000; }
-        .btn-secondary { background: var(--sec-bg); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
+        /* ПОХОЖИЕ ВИНА */
+        .similar-wines {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .similar-wines h4 {
+            margin-bottom: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .similar-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 15px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) rgba(255,255,255,0.05);
+        }
+        .similar-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .similar-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .similar-scroll::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+        .similar-wine-card {
+            flex: 0 0 auto;
+            width: 160px;
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+        }
+        .similar-wine-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.2);
+        }
+        .similar-wine-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: transform 0.3s;
+        }
+        .similar-wine-card:hover img {
+            transform: scale(1.05);
+        }
+        .similar-wine-card h5 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            line-height: 1.3;
+            height: 36px;
+            overflow: hidden;
+            font-weight: 600;
+        }
+
+        /* ПРОГРЕСС В ПРОФИЛЕ */
+        .progress-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid rgba(124, 58, 237, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--hint);
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
 
     <div id="screen-profile" class="screen">
-        <div style="background: var(--sec-bg); border-radius: 25px; padding: 25px; text-align: center; margin-bottom: 25px;">
-            <img id="user-img" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent); margin-bottom: 10px; background: #444;" src="https://via.placeholder.com/80?text=V">
-            <h2 id="user-name" style="margin: 0;">Винолюб</h2>
-            <p id="user-login" style="color: var(--hint); margin-top: 5px;">@username</p>
+        <div style="background: var(--gradient); border-radius: 28px; padding: 30px; text-align: center; margin-bottom: 25px; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+            <img id="user-img" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid white; margin-bottom: 15px; background: #444; position: relative; z-index: 1;" src="https://via.placeholder.com/90?text=V">
+            <h2 id="user-name" style="margin: 0; font-size: 24px; font-weight: 700; position: relative; z-index: 1;">Винолюб</h2>
+            <p id="user-login" style="color: rgba(255,255,255,0.8); margin-top: 8px; font-size: 14px; position: relative; z-index: 1;">@username</p>
         </div>
 
         <!-- ПРОГРЕСС КУРСОВ -->
-        <div class="progress-section">
-            <h3>📚 Мой прогресс обучения</h3>
-            <div class="progress-card">
-                <div class="progress-header">
-                    <h4 style="margin: 0;">🌱 Базовый курс</h4>
-                    <span id="course-percent" style="color: var(--accent); font-weight: bold;">0%</span>
-                </div>
-                <div class="progress-bar">
-                    <div id="course-progress" class="progress-fill" style="width: 0%"></div>
-                </div>
-                <div class="progress-text">
-                    <span id="completed-lessons">0 из 5 уроков</span>
-                    <span>Начато: сегодня</span>
-                </div>
+        <div class="progress-card">
+            <div class="progress-header">
+                <h4 style="margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: var(--gradient); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">📚</span>
+                    Мой прогресс
+                </h4>
+                <span id="course-percent" style="color: var(--accent-light); font-weight: 700; font-size: 20px;">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div id="course-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text">
+                <span id="completed-lessons">0 из 5 уроков</span>
+                <span style="color: var(--success); font-weight: 600;">✨ Начинающий</span>
             </div>
         </div>
 
-        <h3>❤️ Моя коллекция вин</h3>
+        <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+            <span style="color: var(--heart);">❤️</span> Моя коллекция
+        </h3>
         <div id="fav-grid" class="grid"></div>
     </div>
 
     <div id="screen-catalog" class="screen">
         <div class="controls">
             <select id="cat-sel" onchange="load()">
-                <option value="reds">🍷 Красные</option>
-                <option value="whites">🥂 Белые</option>
-                <option value="sparkling">🍾 Игристые</option>
-                <option value="rose">🌸 Розовые</option>
-                <option value="dessert">🍯 Десертные</option>
+                <option value="reds">🍷 Красные вина</option>
+                <option value="whites">🥂 Белые вина</option>
+                <option value="sparkling">🍾 Игристые вина</option>
+                <option value="rose">🌸 Розовые вина</option>
+                <option value="dessert">🍯 Десертные вина</option>
             </select>
-            <input type="text" id="wine-search" placeholder="🔍 Поиск по названию..." oninput="render()">
+            <input type="text" id="wine-search" placeholder="🔍 Поиск вина по названию..." oninput="render()">
         </div>
         <div id="grid" class="grid"></div>
     </div>
 
     <div id="screen-school" class="screen">
-        <h2>🎓 Школа вина</h2>
+        <h2 style="margin-bottom: 10px; font-size: 28px; font-weight: 700; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🎓 Школа вина</h2>
+        <p style="color: var(--hint); margin-bottom: 30px; font-size: 16px;">Выберите курс для углубления знаний</p>
         
-        <!-- ПРОГРЕСС КУРСА -->
-        <div class="progress-card" style="margin-bottom: 25px;">
-            <div class="progress-header">
-                <h4 style="margin: 0;">Базовый курс: Вино за 5 уроков</h4>
-                <span id="school-percent" style="color: var(--accent); font-weight: bold;">0%</span>
+        <!-- КАРТОЧКА БАЗОВОГО КУРСА -->
+        <div class="course-card" onclick="openCourse('basic')">
+            <div class="course-header">
+                <div class="course-icon">🌱</div>
+                <div class="course-info">
+                    <h3>Базовый курс</h3>
+                    <p>Основы винной культуры за 5 уроков. Идеально для начинающих.</p>
+                </div>
             </div>
-            <div class="progress-bar">
-                <div id="school-progress" class="progress-fill" style="width: 0%"></div>
+            <div class="course-progress">
+                <div id="basic-course-progress" class="course-progress-fill" style="width: 0%"></div>
             </div>
-            <div class="progress-text">
-                <span id="school-completed">0 из 5 уроков</span>
-                <span id="next-lesson">Начать обучение</span>
+            <div style="display: flex; justify-content: space-between; margin-top: 15px; color: var(--hint); font-size: 14px;">
+                <span>5 уроков • Бесплатно</span>
+                <span id="basic-course-status">Не начат</span>
             </div>
         </div>
 
-        <!-- СПИСОК УРОКОВ -->
-        <h3 style="margin-bottom: 15px;">Уроки курса</h3>
-        <div id="lessons-list"></div>
-
-        <div style="text-align: center; margin-top: 30px; color: var(--hint); font-size: 14px;">
-            💡 Пройдите все уроки, чтобы получить достижение «Знаток основ»
+        <!-- КАРТОЧКА ПРОДВИНУТОГО КУРСА -->
+        <div class="course-card" onclick="tg.showPopup({title:'Скоро', message:'Продвинутый курс в разработке'})" style="opacity: 0.8;">
+            <div class="course-header">
+                <div class="course-icon" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">🚀</div>
+                <div class="course-info">
+                    <h3>Продвинутый уровень</h3>
+                    <p>Углубленное изучение терруаров, ассамбляжей и выдержки.</p>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 25px; color: var(--hint); font-size: 14px;">
+                <span>7 уроков • Платно</span>
+                <span>Скоро</span>
+            </div>
         </div>
     </div>
 
+    <!-- ЭКРАН УРОКОВ БАЗОВОГО КУРСА -->
+    <div id="screen-course-basic" class="screen">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+            <span class="back-link" onclick="setTab('school')">← Назад к курсам</span>
+        </div>
+        
+        <div style="margin-bottom: 30px;">
+            <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 10px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                🌱 Базовый курс
+            </h2>
+            <p style="color: var(--hint); font-size: 16px;">Основы винной культуры за 5 уроков</p>
+        </div>
+
+        <div class="progress-card" style="margin-bottom: 30px;">
+            <div class="progress-header">
+                <h4 style="margin: 0; font-size: 18px;">Прогресс курса</h4>
+                <span id="basic-lessons-percent" style="color: var(--accent-light); font-weight: 700; font-size: 20px;">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div id="basic-lessons-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text">
+                <span id="basic-lessons-completed">0 из 5 уроков</span>
+                <span id="basic-next-lesson" style="color: var(--accent-light);">Начать обучение</span>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 20px; font-size: 20px;">Уроки курса</h3>
+        <div id="basic-lessons-list"></div>
+    </div>
+
     <div id="screen-wiki" class="screen">
-        <h2>📚 ВикиВино</h2>
+        <h2 style="margin-bottom: 10px; font-size: 28px; font-weight: 700; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">📚 ВикиВино</h2>
+        <p style="color: var(--hint); margin-bottom: 30px; font-size: 16px;">База знаний о вине и разоблачение мифов</p>
+        
         <div class="wiki-tabs">
             <div class="wiki-tab active" id="tab-terms" onclick="toggleWiki('terms')">Термины</div>
             <div class="wiki-tab" id="tab-myths" onclick="toggleWiki('myths')">Мифы</div>
@@ -161,27 +546,30 @@
         <div id="wiki-content"></div>
     </div>
 
-    <!-- МОДАЛКА УРОКА -->
-    <div id="lesson-modal" class="lesson-modal">
-        <span class="back-link" onclick="closeLesson()">❮ Назад к курсу</span>
-        <div id="lesson-modal-content"></div>
-    </div>
-
+    <!-- МОДАЛКИ -->
     <div id="details">
-        <span class="back-link" onclick="closeDetails()">❮ НАЗАД</span>
+        <span class="back-link" onclick="closeDetails()">← Назад к каталогу</span>
         <div id="det-body"></div>
     </div>
 
     <div id="wiki-popup">
-        <span class="back-link" onclick="document.getElementById('wiki-popup').style.display='none'">❮ ЗАКРЫТЬ</span>
-        <h2 id="wiki-title" style="color:var(--accent)"></h2>
-        <div id="wiki-body" style="line-height: 1.6; font-size: 16px;"></div>
+        <span class="back-link" onclick="document.getElementById('wiki-popup').style.display='none'">← Закрыть</span>
+        <h2 id="wiki-title" style="color:var(--accent-light); margin-bottom: 20px;"></h2>
+        <div id="wiki-body" style="line-height: 1.7; font-size: 17px; background: var(--card-bg); padding: 25px; border-radius: 20px; border-left: 5px solid var(--accent);"></div>
     </div>
 
     <div id="zoom-modal" onclick="this.style.display='none'">
-        <img id="zoom-img" style="max-width:90%; max-height:80%; border-radius:10px;">
+        <div style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+            <img id="zoom-img" style="max-width: 90%; max-height: 80%; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+        </div>
     </div>
 
+    <div id="lesson-modal">
+        <span class="back-link" onclick="closeLesson()">← Назад к урокам</span>
+        <div id="lesson-modal-content"></div>
+    </div>
+
+    <!-- НАВИГАЦИЯ -->
     <div class="nav">
         <div class="nav-item active" id="t-profile" onclick="setTab('profile')"><div class="nav-icon">👤</div>Профиль</div>
         <div class="nav-item" id="t-catalog" onclick="setTab('catalog')"><div class="nav-icon">🍷</div>Каталог</div>
@@ -193,6 +581,10 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+
+        let allWines = [];
+        let favorites = JSON.parse(localStorage.getItem('fav_wines') || '[]');
+        let completedLessons = JSON.parse(localStorage.getItem('completed_lessons') || '[]');
 
         // ДАННЫЕ КУРСА
         const wineCourse = [
@@ -231,7 +623,7 @@
             {
                 id: 4,
                 title: "Урок 4. Бокалы, температура и декантация",
-                content: `<b>Цель: Не испортить хорошее вино неправильной подачей.</b><br><br>
+                content: `<b>Цель: Не испортить хорошее вино неправильной подачи.</b><br><br>
                 <b>Температура — это ключ:</b> Главная ошибка — пить красное теплым («комнатной температуры»), а белое — ледяным.<br>
                 • Белое/Игристое: 8–10°C (холодильник).<br>
                 • Красное: 16–18°C (за 15 минут до подачи поставь в холодильник, чтобы оно стало чуть прохладным).<br><br>
@@ -251,10 +643,6 @@
                 tip: "🌟 <b>Золотой совет:</b> Самое простое сочетание — региональное. К итальянской пасте бери итальянское вино."
             }
         ];
-
-        let allWines = [];
-        let favorites = JSON.parse(localStorage.getItem('fav_wines') || '[]');
-        let completedLessons = JSON.parse(localStorage.getItem('completed_lessons') || '[]');
 
         const wikiData = {
             terms: [
@@ -279,10 +667,22 @@
             ],
             myths: [
                 { t: "Ложка в бутылке спасает пузырьки?", d: "<b>Миф!</b> Физика этого не подтверждает. Спасает только герметичный стоппер." },
-                { t: "У вина должно быть вогнутое дно?", d: "<b>Миф!</b> Это традиция стеклодувов, а не показатель качества сока." },
+                { t: "У вина должно быть вогнутое дно?", d: "<b>Миф!</b> Это традиция стеклодувов, а не показатель качества вина." },
                 { t: "Белое только к рыбе, красное к мясу?", d: "<b>Миф!</b> Плотное белое идет к птице, а легкое красное к жирной рыбе." },
                 { t: "Вино с возрастом всегда лучше?", d: "<b>Миф!</b> Большинство вин умирают через 5 лет после выпуска." },
-                { t: "Порошковое вино существует?", d: "<b>Миф!</b> Делать вино из порошка экономически невыгодно." }
+                { t: "Порошковое вино существует?", d: "<b>Миф!</b> Делать вино из порошка экономически невыгодно." },
+                { t: "Дорогое вино всегда лучше дешевого?", d: "<b>Миф!</b> Цена зависит от бренда и редкости. Вино за 1000 рублей может быть вкуснее, чем за 5000." },
+                { t: "Вино должно 'дышать' несколько часов?", d: "<b>Миф!</b> Большинство вин раскрываются за 15-30 минут в бокале. Часы аэрации нужны только старым коллекционным винам." },
+                { t: "Пробка лучше винтовой крышки?", d: "<b>Миф!</b> Винтовая крышка идеально сохраняет свежесть и защищает от 'пробковой болезни'." },
+                { t: "Розовое вино делают из смеси красного и белого?", d: "<b>Миф!</b> Настоящее розовое производят методом ограниченного контакта кожицы красного винограда с соком." },
+                { t: "Хорошее вино должно быть выдержано в дубе?", d: "<b>Миф!</b> Многие сорта (Пино Нуар, Совиньон Блан) лучше раскрываются без дуба." },
+                { t: "Бокалы для красного и белого должны быть разными?", d: "<b>Миф!</b> Для домашнего использования достаточно одного универсального бокала." },
+                { t: "Осадок — признак плохого вина?", d: "<b>Миф!</b> Осадок часто образуется в выдержанных винах и свидетельствует о минимальной фильтрации." },
+                { t: "Натуральные вина полезнее обычных?", d: "<b>Миф!</b> 'Натуральность' — это стиль производства, а не показатель пользы. В любом вине есть алкоголь." },
+                { t: "Биодинамическое вино — это маркетинг?", d: "<b>Миф!</b> Биодинамика — философия земледелия с использованием лунных циклов и натуральных препаратов." },
+                { t: "Вино нельзя хранить в холодильнике больше недели?", d: "<b>Миф!</b> Открытое вино в холодильнике хранится 3-5 дней, а с вакуумной пробкой — до недели." },
+                { t: "Чем темнее бутылка, тем качественнее вино?", d: "<b>Миф!</b> Цвет бутылки защищает от света, но не влияет на качество содержимого." },
+                { t: "Каберне Совиньон — король вин?", d: "<b>Миф!</b> Это самый коммерчески успешный сорт, но 'королей' много — Пино Нуар, Неббиоло, Сира." }
             ]
         };
 
@@ -299,8 +699,18 @@
                 updateProgress();
             }
             if(id === 'school') {
-                renderLessons();
-                updateSchoolProgress();
+                updateCourseProgress();
+            }
+        }
+
+        function openCourse(courseId) {
+            if (courseId === 'basic') {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('screen-course-basic').classList.add('active');
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                
+                updateBasicCourseProgress();
+                renderBasicLessons();
             }
         }
 
@@ -315,43 +725,48 @@
             document.getElementById('completed-lessons').textContent = `${completed} из ${total} уроков`;
         }
 
-        function updateSchoolProgress() {
+        function updateCourseProgress() {
             const completed = completedLessons.length;
             const total = wineCourse.length;
             const percent = Math.round((completed / total) * 100);
             
-            document.getElementById('school-percent').textContent = `${percent}%`;
-            document.getElementById('school-progress').style.width = `${percent}%`;
-            document.getElementById('school-completed').textContent = `${completed} из ${total} уроков`;
+            document.getElementById('basic-course-progress').style.width = `${percent}%`;
+            document.getElementById('basic-course-status').textContent = completed === 0 ? 'Не начат' : 
+                completed === total ? 'Завершен' : `${completed}/${total}`;
+        }
+
+        function updateBasicCourseProgress() {
+            const completed = completedLessons.length;
+            const total = wineCourse.length;
+            const percent = Math.round((completed / total) * 100);
             
-            const nextLesson = completed < total ? wineCourse[completed].title : 'Курс пройден!';
-            document.getElementById('next-lesson').textContent = completed < total ? `Далее: Урок ${completed + 1}` : 'Курс завершён';
+            document.getElementById('basic-lessons-percent').textContent = `${percent}%`;
+            document.getElementById('basic-lessons-progress').style.width = `${percent}%`;
+            document.getElementById('basic-lessons-completed').textContent = `${completed} из ${total} уроков`;
+            document.getElementById('basic-next-lesson').textContent = completed < total ? 
+                `Далее: Урок ${completed + 1}` : 'Курс завершен!';
         }
 
         // РЕНДЕР УРОКОВ
-        function renderLessons() {
-            const container = document.getElementById('lessons-list');
+        function renderBasicLessons() {
+            const container = document.getElementById('basic-lessons-list');
             container.innerHTML = '';
             
             wineCourse.forEach(lesson => {
                 const isCompleted = completedLessons.includes(lesson.id);
-                const preview = lesson.content.replace(/<[^>]*>/g, '').substring(0, 100) + '...';
+                const preview = lesson.content.replace(/<[^>]*>/g, '').substring(0, 120) + '...';
                 
-                const lessonEl = document.createElement('div');
-                lessonEl.className = `lesson-card ${isCompleted ? 'lesson-completed' : ''}`;
-                lessonEl.innerHTML = `
-                    <div class="lesson-number">${lesson.id}</div>
-                    ${isCompleted ? '<div class="checkmark">✓</div>' : ''}
-                    <div class="lesson-title">${lesson.title}</div>
-                    <div class="lesson-preview">${preview}</div>
-                    <div class="lesson-meta">
-                        <span>📖 10 мин чтения</span>
-                        <span>${isCompleted ? '✅ Пройден' : '✏️ Не начат'}</span>
+                container.innerHTML += `
+                    <div class="lesson-item ${isCompleted ? 'completed' : ''}" onclick="openLesson(${lesson.id})">
+                        <div class="lesson-number">${lesson.id}</div>
+                        ${isCompleted ? '<div class="lesson-status">✓</div>' : ''}
+                        <div class="lesson-title">${lesson.title}</div>
+                        <div class="lesson-preview">${preview}</div>
+                        <div style="color: var(--hint); font-size: 13px; margin-top: 10px;">
+                            📖 ~10 мин • ${isCompleted ? '✅ Пройден' : '✏️ Не начат'}
+                        </div>
                     </div>
                 `;
-                
-                lessonEl.onclick = () => openLesson(lesson.id);
-                container.appendChild(lessonEl);
             });
         }
 
@@ -364,51 +779,59 @@
             const nextLessonId = lessonId < wineCourse.length ? lessonId + 1 : null;
             
             document.getElementById('lesson-modal-content').innerHTML = `
-                <div style="margin-bottom: 25px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                        <div style="background: var(--accent); color: #000; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                <div style="margin-bottom: 30px;">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+                        <div style="background: var(--gradient); color: white; width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px;">
                             ${lesson.id}
                         </div>
-                        <h2 style="margin: 0; font-size: 20px;">${lesson.title}</h2>
+                        <h2 style="margin: 0; font-size: 24px; line-height: 1.3;">${lesson.title}</h2>
                     </div>
                     
-                    <div class="lesson-content">
+                    <div style="background: var(--card-bg); padding: 25px; border-radius: 20px; line-height: 1.7; font-size: 17px;">
                         ${lesson.content}
                     </div>
                     
                     ${lesson.tip ? `
-                    <div class="lesson-tip">
-                        ${lesson.tip}
+                    <div style="background: rgba(124, 58, 237, 0.1); border-left: 4px solid var(--accent); padding: 20px; border-radius: 0 15px 15px 0; margin: 25px 0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--accent); font-weight: 600;">
+                            💡 Совет
+                        </div>
+                        <div style="color: var(--text); font-size: 16px;">
+                            ${lesson.tip}
+                        </div>
                     </div>
                     ` : ''}
                     
                     ${!isCompleted ? `
-                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); padding: 15px; border-radius: 12px; margin: 20px 0; text-align: center;">
-                        <div style="color: var(--success); font-weight: bold; margin-bottom: 5px;">🎉 Поздравляем с завершением урока!</div>
-                        <div style="font-size: 14px; color: var(--hint);">Отметьте урок как пройденный, чтобы продолжить обучение</div>
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid var(--success); padding: 20px; border-radius: 16px; margin: 25px 0; text-align: center;">
+                        <div style="color: var(--success); font-weight: 700; font-size: 18px; margin-bottom: 8px;">🎉 Урок почти завершен!</div>
+                        <div style="color: var(--hint); font-size: 15px;">Отметьте урок как пройденный, чтобы продолжить обучение</div>
                     </div>
                     ` : ''}
                 </div>
                 
-                <div class="lesson-actions">
+                <div style="display: flex; gap: 12px; margin-top: 30px;">
                     ${!isCompleted ? `
-                    <div class="btn btn-primary" onclick="completeLesson(${lessonId})">
+                    <button style="flex: 1; padding: 18px; background: var(--gradient); color: white; border: none; border-radius: 16px; font-weight: 600; font-size: 16px; cursor: pointer; transition: transform 0.3s;"
+                            onclick="completeLesson(${lessonId})">
                         ✅ Отметить как пройденный
-                    </div>
+                    </button>
                     ` : `
-                    <div class="btn btn-secondary" style="opacity: 0.7;">
+                    <button style="flex: 1; padding: 18px; background: var(--sec-bg); color: var(--hint); border: 2px solid var(--sec-bg); border-radius: 16px; font-weight: 600; font-size: 16px; cursor: default; opacity: 0.7;">
                         ✅ Урок пройден
-                    </div>
+                    </button>
                     `}
                     
                     ${nextLessonId ? `
-                    <div class="btn btn-secondary" onclick="openLesson(${nextLessonId}); closeLesson();">
+                    <button style="flex: 1; padding: 18px; background: var(--sec-bg); color: var(--text); border: 2px solid var(--accent); border-radius: 16px; font-weight: 600; font-size: 16px; cursor: pointer; transition: all 0.3s;"
+                            onclick="openLesson(${nextLessonId});">
                         Далее → Урок ${nextLessonId}
-                    </div>
+                    </button>
                     ` : `
-                    <div class="btn btn-secondary" onclick="closeLesson(); setTab('profile');">
+                    <button style="flex: 1; padding: 18px; background: var(--sec-bg); color: var(--text); border: 2px solid var(--sec-bg); border-radius: 16px; font-weight: 600; font-size: 16px; cursor: pointer;"
+                            onclick="closeLesson(); setTab('profile');">
                         Вернуться в профиль
-                    </div>
+                    </button>
                     `}
                 </div>
             `;
@@ -425,25 +848,24 @@
                 completedLessons.push(lessonId);
                 localStorage.setItem('completed_lessons', JSON.stringify(completedLessons));
                 
-                // Обновляем прогресс везде
                 updateProgress();
-                updateSchoolProgress();
-                renderLessons();
+                updateCourseProgress();
+                updateBasicCourseProgress();
+                renderBasicLessons();
                 
-                // Показываем анимацию
                 const modalContent = document.getElementById('lesson-modal-content');
                 modalContent.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px;">
-                        <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
-                        <h2 style="color: var(--success);">Урок пройден!</h2>
-                        <p style="color: var(--hint); margin-bottom: 30px;">Вы успешно завершили урок ${lessonId}. Продолжайте в том же духе!</p>
-                        <div class="btn btn-primary" onclick="closeLesson(); setTab('school');">
+                    <div style="text-align: center; padding: 50px 20px;">
+                        <div style="font-size: 70px; margin-bottom: 25px;">🎉</div>
+                        <h2 style="color: var(--success); margin-bottom: 15px;">Урок пройден!</h2>
+                        <p style="color: var(--hint); margin-bottom: 35px; font-size: 16px;">Вы успешно завершили урок ${lessonId}. Продолжайте в том же духе!</p>
+                        <button style="padding: 18px 35px; background: var(--gradient); color: white; border: none; border-radius: 16px; font-weight: 600; font-size: 16px; cursor: pointer;"
+                                onclick="closeLesson(); openCourse('basic');">
                             Вернуться к курсу
-                        </div>
+                        </button>
                     </div>
                 `;
                 
-                // Если курс полностью пройден
                 if (completedLessons.length === wineCourse.length) {
                     setTimeout(() => {
                         tg.showPopup({
@@ -451,39 +873,56 @@
                             message: 'Вы завершили базовый курс и получили звание «Знаток основ»!',
                             buttons: [{ type: 'ok' }]
                         });
-                    }, 500);
+                    }, 600);
                 }
             }
         }
 
-        // ОРИГИНАЛЬНЫЕ ФУНКЦИИ
+        // КАТАЛОГ ВИН
         async function load() {
             const cat = document.getElementById('cat-sel').value;
-            const res = await fetch(`https://api.sampleapis.com/wines/${cat}`);
-            allWines = await res.json();
-            render();
+            try {
+                const res = await fetch(`https://api.sampleapis.com/wines/${cat}`);
+                allWines = await res.json();
+                render();
+            } catch (error) {
+                console.error('Ошибка загрузки вин:', error);
+            }
         }
 
         function render() {
             const query = document.getElementById('wine-search').value.toLowerCase();
             const filtered = allWines.filter(w => w.wine.toLowerCase().includes(query));
-            document.getElementById('grid').innerHTML = filtered.map(w => {
+            const container = document.getElementById('grid');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/3; text-align: center; padding: 50px 20px; color: var(--hint);">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🍇</div>
+                        <h3 style="margin: 0 0 10px 0;">Ничего не найдено</h3>
+                        <p>Попробуйте изменить поисковый запрос</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filtered.map(w => {
                 const isFav = favorites.some(f => f.id === w.id);
                 return `
                 <div class="card">
                     <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav(${w.id}, event)">❤</div>
-                    <img src="${w.image}" onclick="zoomImg('${w.image}')" onerror="this.src='https://via.placeholder.com/100?text=Wine'">
+                    <img src="${w.image}" onclick="showFull(${w.id})" onerror="this.src='https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine'">
                     <div onclick="showFull(${w.id})">
                         <h4>${w.wine}</h4>
-                        <div style="color:#facc15">★ ${w.rating.average}</div>
+                        <div style="color:#fbbf24; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                            ★ ${w.rating.average}
+                        </div>
+                        <div style="color: var(--hint); font-size: 13px; margin-top: 8px;">
+                            ${w.winery}
+                        </div>
                     </div>
                 </div>`;
             }).join('');
-        }
-
-        function zoomImg(src) {
-            document.getElementById('zoom-img').src = src;
-            document.getElementById('zoom-modal').style.display = 'flex';
         }
 
         function getFoodPairing(wineName) {
@@ -499,25 +938,77 @@
         function showFull(id, fromFav = false) {
             const w = fromFav ? favorites.find(x => x.id === id) : allWines.find(x => x.id === id);
             const pairing = getFoodPairing(w.wine);
+            
+            // Получаем похожие вина (из той же категории, исключая текущее)
+            const similar = allWines.filter(wine => wine.id !== id).slice(0, 4);
+            
             document.getElementById('det-body').innerHTML = `
-                <img src="${w.image}" style="width:100%; height:250px; object-fit:contain; background:#fff; border-radius:20px; padding:10px;">
-                <h2>${w.wine}</h2>
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <img src="${w.image}" 
+                         style="width:100%; height:280px; object-fit:contain; background:linear-gradient(135deg, #f1f5f9, #e2e8f0); border-radius:20px; padding:15px; cursor:pointer;" 
+                         onclick="zoomImg('${w.image}')"
+                         onerror="this.src='https://via.placeholder.com/300x280/374151/FFFFFF?text=Wine'">
+                </div>
+                <h2 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700;">${w.wine}</h2>
                 <div class="food-badge">${pairing}</div>
-                <p style="color:var(--hint)">${w.winery} • ${w.location}</p>
-                <div style="background:var(--sec-bg); padding:20px; border-radius:15px; margin:15px 0;">
-                    <b>Характеристики:</b><br><br>
-                    Это вино обладает выраженным характером. Рейтинг: ${w.rating.average} звезды.
+                <p style="color:var(--hint); font-size: 16px; margin: 15px 0 25px 0;">${w.winery} • ${w.location}</p>
+                <div style="background:var(--card-bg); padding:25px; border-radius:20px; margin:20px 0; border-left: 5px solid var(--accent);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent); font-weight: 600;">
+                        🏆 Характеристики
+                    </div>
+                    <p style="margin: 0; line-height: 1.6; font-size: 16px;">
+                        Это вино обладает выраженным характером с богатым букетом ароматов. 
+                        Рейтинг: <span style="color:#fbbf24; font-weight: 600;">${w.rating.average} из 5</span> звезд.
+                        ${w.rating.reviews ? `На основе ${w.rating.reviews} отзывов.` : ''}
+                    </p>
+                </div>
+                
+                <!-- Похожие вина -->
+                <div class="similar-wines">
+                    <h4>
+                        <span style="background: var(--gradient); width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px;">🍷</span>
+                        Похожие вина
+                    </h4>
+                    <div class="similar-scroll">
+                        ${similar.map(sw => `
+                            <div class="similar-wine-card" onclick="showFull(${sw.id}); document.getElementById('details').scrollTop = 0;">
+                                <img src="${sw.image}" onerror="this.src='https://via.placeholder.com/150x120/374151/FFFFFF?text=Wine'">
+                                <h5>${sw.wine}</h5>
+                                <div style="color:#fbbf24; font-size:13px; font-weight: 600;">★ ${sw.rating.average}</div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             `;
             document.getElementById('details').style.display = 'block';
         }
 
+        function zoomImg(src) {
+            document.getElementById('zoom-img').src = src;
+            document.getElementById('zoom-modal').style.display = 'flex';
+        }
+
         function toggleFav(id, event) {
-            event.stopPropagation();
+            if (event) event.stopPropagation();
             const wine = allWines.find(w => w.id === id) || favorites.find(w => w.id === id);
+            if (!wine) return;
+            
             const index = favorites.findIndex(f => f.id === id);
-            if(index > -1) favorites.splice(index, 1);
-            else favorites.push(wine);
+            if (index > -1) {
+                favorites.splice(index, 1);
+                tg.showPopup({
+                    title: '❤️ Удалено из избранного',
+                    message: wine.wine,
+                    buttons: [{ type: 'ok' }]
+                });
+            } else {
+                favorites.push(wine);
+                tg.showPopup({
+                    title: '❤️ Добавлено в избранное',
+                    message: wine.wine,
+                    buttons: [{ type: 'ok' }]
+                });
+            }
             localStorage.setItem('fav_wines', JSON.stringify(favorites));
             render();
             renderFavs();
@@ -525,15 +1016,24 @@
 
         function renderFavs() {
             const container = document.getElementById('fav-grid');
-            if(favorites.length === 0) {
-                container.innerHTML = '<p style="color:var(--hint); grid-column:1/3; text-align:center; padding:20px;">Здесь пока пусто. Добавляйте вина из каталога!</p>';
+            if (favorites.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/3; text-align: center; padding: 40px 20px; color: var(--hint);">
+                        <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">❤️</div>
+                        <h4 style="margin: 0 0 10px 0;">Коллекция пуста</h4>
+                        <p style="margin: 0;">Добавляйте вина из каталога сердечком</p>
+                    </div>
+                `;
                 return;
             }
             container.innerHTML = favorites.map(w => `
                 <div class="card">
                     <div class="fav-btn active" onclick="toggleFav(${w.id}, event)">❤</div>
-                    <img src="${w.image}" onclick="showFull(${w.id}, true)" onerror="this.src='https://via.placeholder.com/100?text=Wine'">
-                    <h4>${w.wine}</h4>
+                    <img src="${w.image}" onclick="showFull(${w.id}, true)" onerror="this.src='https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine'">
+                    <div onclick="showFull(${w.id}, true)">
+                        <h4>${w.wine}</h4>
+                        <div style="color:#fbbf24; font-weight: 600;">★ ${w.rating.average}</div>
+                    </div>
                 </div>
             `).join('');
         }
@@ -542,7 +1042,7 @@
             document.querySelectorAll('.wiki-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(`tab-${type}`).classList.add('active');
             document.getElementById('wiki-content').innerHTML = wikiData[type].map(item => `
-                <div class="wiki-item" onclick="showWikiPop('${item.t}', '${item.d}')">
+                <div class="wiki-item" onclick="showWikiPop('${item.t.replace(/'/g, "\\'")}', '${item.d.replace(/'/g, "\\'")}')">
                     <strong>${item.t}</strong>
                 </div>
             `).join('');
@@ -554,7 +1054,9 @@
             document.getElementById('wiki-popup').style.display = 'block';
         }
 
-        function closeDetails() { document.getElementById('details').style.display = 'none'; }
+        function closeDetails() { 
+            document.getElementById('details').style.display = 'none'; 
+        }
 
         // ИНИЦИАЛИЗАЦИЯ ПОЛЬЗОВАТЕЛЯ TELEGRAM
         const user = tg.initDataUnsafe.user;
@@ -567,6 +1069,8 @@
         // НАЧАЛЬНАЯ ЗАГРУЗКА
         setTab('profile');
         updateProgress();
+        updateCourseProgress();
+        toggleWiki('terms');
     </script>
 </body>
 </html>
