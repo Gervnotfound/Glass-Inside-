@@ -722,6 +722,11 @@
             animation: float 3s ease-in-out infinite;
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
         /* Кнопки */
         .btn {
             padding: 16px 24px;
@@ -925,14 +930,14 @@
     <!-- ЭКРАН КАТАЛОГА -->
     <div id="screen-catalog" class="screen">
         <div class="controls">
-            <select id="cat-sel">
+            <select id="cat-sel" onchange="loadWines()">
                 <option value="reds">🍷 Красные вина</option>
                 <option value="whites">🥂 Белые вина</option>
                 <option value="sparkling">🍾 Игристые вина</option>
                 <option value="rose">🌸 Розовые вина</option>
                 <option value="dessert">🍯 Десертные вина</option>
             </select>
-            <input type="text" id="wine-search" placeholder="🔍 Поиск вина по названию...">
+            <input type="text" id="wine-search" placeholder="🔍 Поиск вина по названию..." oninput="renderWines()">
         </div>
         <div id="grid" class="grid"></div>
         <div id="empty-catalog" style="text-align: center; padding: 50px 20px; color: var(--hint); display: none;">
@@ -1157,7 +1162,7 @@
                 <b>Старый Свет vs Новый Свет:</b><br>
                 • <i>Старый Свет</i> (Франция, Италия, Испания) — часто пишут регион (напр. Chianti), подразумевая сорт по умолчанию.<br>
                 • <i>Новый Свет</i> (Чили, Аргентина, Новая Зеландия) — честно пишут сорт винограда крупными буквами.<br><br>
-                <b>Содержание сахара:</b> Сухое — это не «кислятина», это вино, где весь сахар превратился в алкоголь. Если боишься кислоты, выбирай «полусухое».<br><br>
+                <b>Содержание сахара:</b> Сухое — это не «кислятина», это вино, где весь сахар превратился в алкоголь. Если боишься кислотя, выбирай «полусухое».<br><br>
                 <b>Год урожая:</b> Для простых вин до 1500–2000 руб. принцип один: чем свежее, тем лучше. Белые вина старше 2–3 лет без специальной выдержки теряют аромат.`,
                 tip: "💡 <b>Совет:</b> Не бойся вин Нового Света, они часто понятнее для новичка.",
                 quiz: [
@@ -1991,34 +1996,28 @@
                 }, 1000);
             }
         }
-        
-        // ЗАГРУЗКА ВИН ИЗ API
+
+        // КАТАЛОГ ВИНА - ОСНОВНОЙ ФУНКЦИОНАЛ
         async function loadWines() {
-            const category = document.getElementById('cat-sel').value;
+            const cat = document.getElementById('cat-sel').value;
             const container = document.getElementById('grid');
             const emptyMsg = document.getElementById('empty-catalog');
             
             container.innerHTML = '<div style="grid-column: 1/3; text-align: center; padding: 40px; color: var(--hint);">Загрузка вин...</div>';
             
             try {
-                // Используем фиктивные данные, так как API может не работать
-                // В реальном приложении здесь будет fetch запрос
-                
-                // Фиктивные данные для демонстрации
-                allWines = getMockWines(category);
-                
-                // Имитируем задержку загрузки
-                setTimeout(() => {
-                    renderWines();
-                }, 500);
-                
+                const res = await fetch(`https://api.sampleapis.com/wines/${cat}`);
+                allWines = await res.json();
+                renderWines();
             } catch (error) {
                 console.error('Ошибка загрузки вин:', error);
-                container.innerHTML = '<div style="grid-column: 1/3; text-align: center; padding: 40px; color: var(--hint);">Ошибка загрузки данных</div>';
+                // Используем фиктивные данные в случае ошибки
+                allWines = getMockWines(cat);
+                renderWines();
             }
         }
         
-        // ФИКТИВНЫЕ ДАННЫЕ ДЛЯ ВИН
+        // ФИКТИВНЫЕ ДАННЫЕ ДЛЯ ВИН (на случай если API не работает)
         function getMockWines(category) {
             const wines = {
                 reds: [
@@ -2026,7 +2025,7 @@
                     { id: 2, wine: "Мерло 2019", winery: "Concha y Toro", location: "Маипо, Чили", image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=400&fit=crop&crop=center", rating: { average: 4.3, reviews: 89 } },
                     { id: 3, wine: "Пино Нуар 2021", winery: "Domaine de la Romanée", location: "Бургундия, Франция", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=400&fit=crop&crop=center", rating: { average: 4.8, reviews: 156 } },
                     { id: 4, wine: "Сира 2018", winery: "Penfolds", location: "Барросса, Австралия", image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=400&fit=crop&crop=center", rating: { average: 4.5, reviews: 112 } },
-                    { id: 5, wine: "Темпранильо 2019", winery: "Marqués de Riscal", location: "Риоха, Испания", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=400&fit=crop&crop=center", rating: { average: 4.2, reviews: 78 } },
+                    { id: 5, wine: "Темпранильло 2019", winery: "Marqués de Riscal", location: "Риоха, Испания", image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=400&fit=crop&crop=center", rating: { average: 4.2, reviews: 78 } },
                     { id: 6, wine: "Мальбек 2020", winery: "Catena Zapata", location: "Мендоса, Аргентина", image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=400&fit=crop&crop=center", rating: { average: 4.6, reviews: 95 } }
                 ],
                 whites: [
@@ -2071,18 +2070,20 @@
             
             container.innerHTML = filtered.map(w => {
                 const isFav = favorites.some(f => f.id === w.id);
+                const imageUrl = w.image || 'https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine';
+                
                 return `
                     <div class="card">
                         <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${w.id}, event)">
                             ❤
                         </div>
                         <div class="image-container">
-                            <img src="${w.image}" alt="${w.wine}" onclick="showWineDetails(${w.id})">
+                            <img src="${imageUrl}" alt="${w.wine}" onclick="showWineDetails(${w.id})" onerror="this.src='https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine'">
                         </div>
                         <div onclick="showWineDetails(${w.id})" style="cursor: pointer;">
                             <h4>${w.wine}</h4>
                             <div style="color: #fbbf24; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 8px;">
-                                ★ ${w.rating.average}
+                                ★ ${w.rating?.average || '4.5'}
                             </div>
                             <div style="color: var(--hint); font-size: 13px; margin-top: 5px;">
                                 ${w.winery}
@@ -2094,63 +2095,6 @@
                     </div>
                 `;
             }).join('');
-        }
-        
-        // ПЕРЕКЛЮЧЕНИЕ ИЗБРАННОГО
-        function toggleFavorite(wineId, event) {
-            if (event) event.stopPropagation();
-            
-            const wine = allWines.find(w => w.id === wineId);
-            if (!wine) return;
-            
-            const index = favorites.findIndex(f => f.id === wineId);
-            
-            if (index > -1) {
-                favorites.splice(index, 1);
-                showNotification(`Удалено из избранного: ${wine.wine}`, 'info');
-            } else {
-                favorites.push(wine);
-                showNotification(`Добавлено в избранное: ${wine.wine}`, 'success');
-            }
-            
-            saveLocalData();
-            renderWines();
-            renderFavorites();
-        }
-        
-        // РЕНДЕР ИЗБРАННОГО
-        function renderFavorites() {
-            const container = document.getElementById('fav-grid');
-            const emptyMsg = document.getElementById('empty-favs');
-            
-            if (favorites.length === 0) {
-                container.style.display = 'none';
-                emptyMsg.style.display = 'block';
-                return;
-            }
-            
-            container.style.display = 'grid';
-            emptyMsg.style.display = 'none';
-            
-            container.innerHTML = favorites.map(w => `
-                <div class="card">
-                    <div class="fav-btn active" onclick="toggleFavorite(${w.id}, event)">
-                        ❤
-                    </div>
-                    <div class="image-container">
-                        <img src="${w.image}" alt="${w.wine}" onclick="showWineDetails(${w.id}, true)">
-                    </div>
-                    <div onclick="showWineDetails(${w.id}, true)" style="cursor: pointer;">
-                        <h4>${w.wine}</h4>
-                        <div style="color: #fbbf24; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 8px;">
-                            ★ ${w.rating.average}
-                        </div>
-                        <div style="color: var(--hint); font-size: 13px;">
-                            ${w.winery}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
         }
         
         // ПОКАЗАТЬ ДЕТАЛИ ВИНА
@@ -2185,26 +2129,26 @@
                     foodPairing = "🍽 Универсальные закуски";
             }
             
+            const imageUrl = wine.image || 'https://via.placeholder.com/300x280/374151/FFFFFF?text=Wine';
+            
             document.getElementById('det-body').innerHTML = `
                 <div style="margin-bottom: 30px;">
-                    <div class="image-container" style="height: 250px; cursor: pointer;" onclick="zoomImage('${wine.image}')">
-                        <img src="${wine.image}" alt="${wine.wine}" style="object-fit: contain;">
+                    <div class="image-container" style="height: 250px; cursor: pointer;" onclick="zoomImage('${imageUrl}')">
+                        <img src="${imageUrl}" alt="${wine.wine}" style="object-fit: contain;" onerror="this.src='https://via.placeholder.com/300x280/374151/FFFFFF?text=Wine'">
                     </div>
                     
                     <h2 style="margin: 20px 0 10px 0; font-size: 24px; font-weight: 700;">${wine.wine}</h2>
                     
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                         <div style="color: #fbbf24; font-weight: 700; font-size: 20px;">
-                            ★ ${wine.rating.average}
+                            ★ ${wine.rating?.average || '4.5'}
                         </div>
                         <div style="color: var(--hint); font-size: 14px;">
-                            (${wine.rating.reviews} оценок)
+                            ${wine.rating?.reviews ? `(${wine.rating.reviews} оценок)` : ''}
                         </div>
                     </div>
                     
-                    <div class="food-badge" style="margin: 15px 0;">
-                        ${foodPairing}
-                    </div>
+                    <div class="food-badge">${foodPairing}</div>
                     
                     <div style="background: var(--card-bg); padding: 20px; border-radius: 16px; margin: 20px 0;">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--accent); font-weight: 600;">
@@ -2220,7 +2164,7 @@
                         </div>
                         <p style="margin: 0; line-height: 1.6; font-size: 16px;">
                             ${getWineDescription(wine.wine, category)} 
-                            ${wine.rating.average >= 4.5 ? 'Это вино получило высокие оценки экспертов и любителей.' : 'Популярный выбор среди ценителей.'}
+                            ${wine.rating?.average >= 4.5 ? 'Это вино получило высокие оценки экспертов и любителей.' : 'Популярный выбор среди ценителей.'}
                         </p>
                     </div>
                     
@@ -2231,13 +2175,15 @@
                             Похожие вина
                         </h4>
                         <div class="similar-scroll">
-                            ${similarWines.map(sw => `
-                                <div class="similar-wine-card" onclick="showWineDetails(${sw.id})">
-                                    <img src="${sw.image}" alt="${sw.wine}">
+                            ${similarWines.map(sw => {
+                                const similarImageUrl = sw.image || 'https://via.placeholder.com/150x120/374151/FFFFFF?text=Wine';
+                                return `
+                                <div class="similar-wine-card" onclick="showWineDetails(${sw.id}); document.getElementById('details').scrollTop = 0;">
+                                    <img src="${similarImageUrl}" alt="${sw.wine}" onerror="this.src='https://via.placeholder.com/150x120/374151/FFFFFF?text=Wine'">
                                     <h5>${sw.wine}</h5>
-                                    <div style="color: #fbbf24; font-size: 13px; font-weight: 600;">★ ${sw.rating.average}</div>
+                                    <div style="color: #fbbf24; font-size: 13px; font-weight: 600;">★ ${sw.rating?.average || '4.5'}</div>
                                 </div>
-                            `).join('')}
+                            `}).join('')}
                         </div>
                     </div>
                     ` : ''}
@@ -2267,6 +2213,66 @@
             };
             
             return descriptions[category] || "Качественное вино с хорошо сбалансированным вкусом.";
+        }
+        
+        // ПЕРЕКЛЮЧЕНИЕ ИЗБРАННОГО
+        function toggleFavorite(wineId, event) {
+            if (event) event.stopPropagation();
+            
+            const wine = allWines.find(w => w.id === wineId) || favorites.find(w => w.id === wineId);
+            if (!wine) return;
+            
+            const index = favorites.findIndex(f => f.id === wineId);
+            
+            if (index > -1) {
+                favorites.splice(index, 1);
+                showNotification(`Удалено из избранного: ${wine.wine}`, 'info');
+            } else {
+                favorites.push(wine);
+                showNotification(`Добавлено в избранное: ${wine.wine}`, 'success');
+            }
+            
+            saveLocalData();
+            renderWines();
+            renderFavorites();
+        }
+        
+        // РЕНДЕР ИЗБРАННОГО
+        function renderFavorites() {
+            const container = document.getElementById('fav-grid');
+            const emptyMsg = document.getElementById('empty-favs');
+            
+            if (favorites.length === 0) {
+                container.style.display = 'none';
+                emptyMsg.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            emptyMsg.style.display = 'none';
+            
+            container.innerHTML = favorites.map(w => {
+                const imageUrl = w.image || 'https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine';
+                return `
+                    <div class="card">
+                        <div class="fav-btn active" onclick="toggleFavorite(${w.id}, event)">
+                            ❤
+                        </div>
+                        <div class="image-container">
+                            <img src="${imageUrl}" alt="${w.wine}" onclick="showWineDetails(${w.id}, true)" onerror="this.src='https://via.placeholder.com/150x150/374151/FFFFFF?text=Wine'">
+                        </div>
+                        <div onclick="showWineDetails(${w.id}, true)" style="cursor: pointer;">
+                            <h4>${w.wine}</h4>
+                            <div style="color: #fbbf24; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 8px;">
+                                ★ ${w.rating?.average || '4.5'}
+                            </div>
+                            <div style="color: var(--hint); font-size: 13px;">
+                                ${w.winery}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
         
         // ЗАКРЫТИЕ ДЕТАЛЕЙ ВИНА
