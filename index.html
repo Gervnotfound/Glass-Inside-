@@ -1789,27 +1789,47 @@
     }
     
     // КАТАЛОГ ВИНА - ОСНОВНОЙ ФУНКЦИОНАЛ
-    async function loadWines() {
-        const cat = document.getElementById('cat-sel').value;
-        const container = document.getElementById('grid');
-        const emptyMsg = document.getElementById('empty-catalog');
-        
-        container.innerHTML = '<div style="grid-column: 1/3; text-align: center; padding: 40px; color: var(--hint);">Загрузка вин...</div>';
-        
-        try {
-            // Используем фиктивные данные
-            allWines = getMockWines(cat);
-            
-            // Имитируем задержку загрузки
-            setTimeout(() => {
-                renderWines();
-            }, 500);
-            
-        } catch (error) {
-            console.error('Ошибка загрузки вин:', error);
-            container.innerHTML = '<div style="grid-column: 1/3; text-align: center; padding: 40px; color: var(--hint);">Ошибка загрузки данных</div>';
-        }
-    }
+const WINE_ENDPOINTS = {
+  red: 'https://api.sampleapis.com/wines/reds',
+  white: 'https://api.sampleapis.com/wines/whites',
+  sparkling: 'https://api.sampleapis.com/wines/sparkling',
+  rose: 'https://api.sampleapis.com/wines/rose',
+  dessert: 'https://api.sampleapis.com/wines/dessert'
+};
+
+async function loadAllWines() {
+  try {
+    const requests = Object.entries(WINE_ENDPOINTS).map(
+      async ([type, url]) => {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        return data.map(wine => ({
+          id: `${type}_${wine.id || wine.winery + wine.wine}`,
+          name: wine.wine,
+          winery: wine.winery,
+          country: wine.location || 'Unknown',
+          image: wine.image || '',
+          rating: wine.rating?.average || null,
+          reviews: wine.rating?.reviews || 0,
+          type: type,
+          price: null, // можно расширить позже
+          description: `${wine.wine} — ${type} wine from ${wine.location || 'unknown region'}`
+        }));
+      }
+    );
+
+    const results = await Promise.all(requests);
+    allWines = results.flat();
+
+    console.log('Загружено вин:', allWines.length);
+
+    renderWines(allWines);
+  } catch (error) {
+    console.error('Ошибка загрузки вин:', error);
+  }
+}
+
     
     // ФИКТИВНЫЕ ДАННЫЕ ДЛЯ ВИН
     function getMockWines(category) {
@@ -2178,3 +2198,4 @@
 </script>
 </body>
 </html>
+
